@@ -1,18 +1,22 @@
 %putc ( char -- ) { #18 DEO }
 
 |100
-  ;hello
-  DUP2
+  ;hello putln
+  ;ok putln
+  BRK
+
+@putln ( cstr -- )
 &loop
+  DUP2
   LDAk
   DUP
   ?&print
-  #40 putc
-  BRK
+  #0a putc
+  JMP2r
 &print
   putc
   INC2
   ,&loop JMP
 
-@hello
-  "Hello 20 "World! #00
+@hello "Hello 20 "World!! 00
+@ok "Ok 00
