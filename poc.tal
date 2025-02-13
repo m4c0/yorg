@@ -1,0 +1,18 @@
+%putc ( char -- ) { #18 DEO }
+
+|100
+  ;hello
+  DUP2
+&loop
+  LDAk
+  DUP
+  ?&print
+  #40 putc
+  BRK
+&print
+  putc
+  INC2
+  ,&loop JMP
+
+@hello
+  "Hello 20 "World! #00
