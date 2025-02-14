@@ -1,39 +1,45 @@
 |00 @System &vector $2 &expansion $2 &wst $1 &rst $1 &metadata $2 &r $2 &g $2 &b $2 &debug $1 &state $1
 |20 @Screen &vector $2 &width $2 &height $2 &auto $2 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1
 
-|0
-  @box_1 &x $1 &y $1 &spr $2
-  @box_2 &x $1 &y $1 &spr $2
-
 |100
   ( theme )
   #0f7f .System/r DEO2
   #0fd6 .System/g DEO2
   #0fb2 .System/b DEO2
 
-  #08 .box_1/x STZ
-  #04 .box_1/y STZ
-  ;box .box_1/spr STZ2
+  ;grid &loop
+    DUP2 DUP #01 AND STA    
+    INC2 DUP2 #0fff AND2 #0100 LTH2 ?&loop
+  &end POP2
 
-  #0a .box_2/x STZ
-  #04 .box_2/y STZ
-  ;box .box_2/spr STZ2
-
-  ;box_1 ;draw JSR2
-  ;box_2 ;draw JSR2
+  ;grid &loop
+    DUP #04 SFTk NIP SWP #40 SFT ( x y )
+    
+    INC2 DUP2 #0fff AND2 #0100 LTH2 ?&loop
+  &end POP2
   BRK
 
-@draw ( sprite )
-  LDZk #00 SWP #40 SFT2 .Screen/x DEO2
-  INC LDZk #00 SWP #40 SFT2 .Screen/y DEO2
-  INC LDZ2 .Screen/addr DEO2
+@draw ( x y spr -> )
+  .Screen/addr DEO2
+  .Screen/y DEO2
+  .Screen/x DEO2
   #16 .Screen/auto DEO
   #01 .Screen/sprite DEOk DEO
   JMP2r
 
+|e000
 @box
   00 7f 40 40 40 40 40 40
   00 fe 02 02 02 02 02 02
   40 40 40 40 40 40 7f 00
   02 02 02 02 02 02 fe 00
+@box2
+  00 7f 7f 7f 7f 7f 7f 7f
+  00 fe fe fe fe fe fe fe
+  7f 7f 7f 7f 7f 7f 7f 00
+  fe fe fe fe fe fe fe 00
 
+( Game State )
+
+|f000
+@grid $100
