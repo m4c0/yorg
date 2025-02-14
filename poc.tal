@@ -7,13 +7,23 @@
   #0fd6 .System/g DEO2
   #0fb2 .System/b DEO2
 
-  #0020 .Screen/x DEO2
-  #0040 .Screen/y DEO2
+  #02 .box_1/x STZ
+  #04 .box_1/y STZ
+
+  #03 .box_2/x STZ
+  #04 .box_2/y STZ
+
+  #0080 #0040 ;draw JSR2
+  #0100 #0040 ;draw JSR2
+  BRK
+
+@draw ( sprite )
+  .Screen/y DEO2
+  .Screen/x DEO2
   ;box .Screen/addr DEO2
   #16 .Screen/auto DEO
-  #01 .Screen/sprite DEO
-  #01 .Screen/sprite DEO
-  BRK
+  #01 .Screen/sprite DEOk DEO
+  JMP2r
 
 @box
   00 7f 40 40 40 40 40 40
