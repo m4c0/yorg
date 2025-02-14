@@ -10,21 +10,13 @@
   #0020 .Screen/x DEO2
   #0040 .Screen/y DEO2
   ;box .Screen/addr DEO2
-  #01 .Screen/sprite DEO
-
-  #0028 .Screen/x DEO2
-  #0040 .Screen/y DEO2
-  ;box #0008 ADD2 .Screen/addr DEO2
+  #16 .Screen/auto DEO
   #01 .Screen/sprite DEO
 
   #0020 .Screen/x DEO2
   #0048 .Screen/y DEO2
   ;box #0010 ADD2 .Screen/addr DEO2
-  #01 .Screen/sprite DEO
-
-  #0028 .Screen/x DEO2
-  #0048 .Screen/y DEO2
-  ;box #0018 ADD2 .Screen/addr DEO2
+  #16 .Screen/auto DEO
   #01 .Screen/sprite DEO
 
   BRK
