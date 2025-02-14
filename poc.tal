@@ -1,26 +1,32 @@
 |00 @System &vector $2 &expansion $2 &wst $1 &rst $1 &metadata $2 &r $2 &g $2 &b $2 &debug $1 &state $1
 |20 @Screen &vector $2 &width $2 &height $2 &auto $2 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1
 
+|0
+  @box_1 &x $1 &y $1 &spr $2
+  @box_2 &x $1 &y $1 &spr $2
+
 |100
   ( theme )
   #0f7f .System/r DEO2
   #0fd6 .System/g DEO2
   #0fb2 .System/b DEO2
 
-  #02 .box_1/x STZ
+  #08 .box_1/x STZ
   #04 .box_1/y STZ
+  ;box .box_1/spr STZ2
 
-  #03 .box_2/x STZ
+  #0a .box_2/x STZ
   #04 .box_2/y STZ
+  ;box .box_2/spr STZ2
 
-  #0080 #0040 ;draw JSR2
-  #0100 #0040 ;draw JSR2
+  ;box_1 ;draw JSR2
+  ;box_2 ;draw JSR2
   BRK
 
 @draw ( sprite )
-  .Screen/y DEO2
-  .Screen/x DEO2
-  ;box .Screen/addr DEO2
+  LDZk #00 SWP #40 SFT2 .Screen/x DEO2
+  INC LDZk #00 SWP #40 SFT2 .Screen/y DEO2
+  INC LDZ2 .Screen/addr DEO2
   #16 .Screen/auto DEO
   #01 .Screen/sprite DEOk DEO
   JMP2r
