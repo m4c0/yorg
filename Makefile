@@ -1,5 +1,5 @@
 all: poc.rom
-	uxncli $<
+	uxnemu $<
 
 poc.rom: poc.tal
 	uxnasm $< $@

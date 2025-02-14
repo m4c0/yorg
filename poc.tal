@@ -1,22 +1,37 @@
-%putc ( char -- ) { #18 DEO }
+|00 @System &vector $2 &expansion $2 &wst $1 &rst $1 &metadata $2 &r $2 &g $2 &b $2 &debug $1 &state $1
+|20 @Screen &vector $2 &width $2 &height $2 &auto $2 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1
 
 |100
-  ;hello putln
-  ;ok putln
+  ( theme )
+  #0f7f .System/r DEO2
+  #0fd6 .System/g DEO2
+  #0fb2 .System/b DEO2
+
+  #0020 .Screen/x DEO2
+  #0040 .Screen/y DEO2
+  ;box .Screen/addr DEO2
+  #01 .Screen/sprite DEO
+
+  #0028 .Screen/x DEO2
+  #0040 .Screen/y DEO2
+  ;box #0008 ADD2 .Screen/addr DEO2
+  #01 .Screen/sprite DEO
+
+  #0020 .Screen/x DEO2
+  #0048 .Screen/y DEO2
+  ;box #0010 ADD2 .Screen/addr DEO2
+  #01 .Screen/sprite DEO
+
+  #0028 .Screen/x DEO2
+  #0048 .Screen/y DEO2
+  ;box #0018 ADD2 .Screen/addr DEO2
+  #01 .Screen/sprite DEO
+
   BRK
 
-@putln ( cstr -- )
-&loop
-  DUP2
-  LDAk
-  DUP
-  ?&print
-  #0a putc
-  JMP2r
-&print
-  putc
-  INC2
-  ,&loop JMP
+@box
+  00 7f 40 40 40 40 40 40
+  00 fe 02 02 02 02 02 02
+  40 40 40 40 40 40 7f 00
+  02 02 02 02 02 02 fe 00
 
-@hello "Hello 20 "World!! 00
-@ok "Ok 00
