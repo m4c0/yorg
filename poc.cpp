@@ -8,7 +8,7 @@ import vee;
 import voo;
 import vapp;
 
-static constexpr const auto inst_count = 2;
+static constexpr const auto inst_count = 256;
 struct inst_t {
   dotz::vec2 pos;
 };
@@ -28,8 +28,6 @@ struct : vapp {
       {
         voo::mapmem mm { inst.memory() };
         auto * ptr = static_cast<inst_t *>(*mm);
-        ptr[0].pos = { 0, 0 };
-        ptr[1].pos = { 1, 0 };
       }
 
       auto pl = vee::create_pipeline_layout();
@@ -57,7 +55,7 @@ struct : vapp {
           vee::cmd_set_scissor(*scb, sw.extent());
           vee::cmd_bind_gr_pipeline(*scb, *gp);
           vee::cmd_bind_vertex_buffers(*scb, 1, inst.buffer());
-          quad.run(*scb, 0, 2);
+          quad.run(*scb, 0, 256);
         });
       });
     });
