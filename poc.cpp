@@ -25,17 +25,32 @@ struct : vapp {
         )
       };
 
-      {
-        voo::mapmem mm { inst.memory() };
-        auto * ptr = static_cast<inst_t *>(*mm);
-      }
+      //{
+      //  voo::mapmem mm { inst.memory() };
+      //  auto * ptr = static_cast<inst_t *>(*mm);
+      //}
 
-      auto rp = vee::create_render_pass(dq.physical_device(), dq.surface());
+      auto rp = vee::create_render_pass(vee::create_render_pass_params {
+        .attachments {{
+          vee::create_colour_attachment(dq.physical_device(), dq.surface()),
+        }},
+        .subpasses {{
+          vee::create_subpass({
+            .colours {{
+              vee::create_attachment_ref(0, vee::image_layout_color_attachment_optimal),
+            }},
+          }),
+        }},
+        .dependencies {{
+          vee::create_colour_dependency(),
+        }},
+      });
 
       auto pl = vee::create_pipeline_layout();
       auto gp = vee::create_graphics_pipeline({
         .pipeline_layout = *pl,
         .render_pass = *rp,
+        .depth_test = false,
         .shaders {
           voo::shader("poc.vert.spv").pipeline_vert_stage(),
           voo::shader("poc.frag.spv").pipeline_frag_stage(),
