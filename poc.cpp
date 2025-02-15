@@ -15,7 +15,7 @@ struct inst_t {
 
 struct : vapp {
   void run() override {
-    main_loop("yorg", [&](auto & dq, auto & sw) {
+    main_loop("yorg", [&](auto & dq) {
       voo::one_quad quad { dq.physical_device() };
       voo::host_buffer inst {
         dq.physical_device(),
@@ -65,8 +65,21 @@ struct : vapp {
         },
       });;
 
-      extent_loop(dq.queue(), sw, [&] {
-        sw.queue_one_time_submit(dq.queue(), [&](auto pcb) {
+      voo::single_cb cb { dq.queue_family() };
+      voo::frame_sync_stuff sync {};
+      voo::swapchain sw { dq };
+      sw.create_framebuffers([&](auto iv) {
+        return vee::create_framebuffer({
+          .physical_device = dq.physical_device(),
+          .surface = dq.surface(),
+          .render_pass = *rp,
+          .attachments {{ iv }},
+        });
+      });
+      extent_loop([&] {
+        voo::present_guard pg { dq.queue(), &sw, &sync };
+        {
+          voo::cmd_buf_one_time_submit pcb { cb.cb() };
           auto scb = voo::cmd_render_pass({
             .command_buffer = *pcb,
             .render_pass = *rp,
@@ -81,8 +94,10 @@ struct : vapp {
           vee::cmd_bind_gr_pipeline(*scb, *gp);
           vee::cmd_bind_vertex_buffers(*scb, 1, inst.buffer());
           quad.run(*scb, 0, 256);
-        });
+        }
+        sync.queue_submit(dq.queue(), cb.cb());
       });
+      dq.queue()->device_wait_idle();
     });
   }
 } i;
