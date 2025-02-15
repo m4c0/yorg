@@ -30,10 +30,12 @@ struct : vapp {
         auto * ptr = static_cast<inst_t *>(*mm);
       }
 
+      auto rp = vee::create_render_pass(dq.physical_device(), dq.surface());
+
       auto pl = vee::create_pipeline_layout();
       auto gp = vee::create_graphics_pipeline({
         .pipeline_layout = *pl,
-        .render_pass = dq.render_pass(),
+        .render_pass = *rp,
         .shaders {
           voo::shader("poc.vert.spv").pipeline_vert_stage(),
           voo::shader("poc.frag.spv").pipeline_frag_stage(),
@@ -50,7 +52,15 @@ struct : vapp {
 
       extent_loop(dq.queue(), sw, [&] {
         sw.queue_one_time_submit(dq.queue(), [&](auto pcb) {
-          auto scb = sw.cmd_render_pass({ *pcb });
+          auto scb = voo::cmd_render_pass({
+            .command_buffer = *pcb,
+            .render_pass = *rp,
+            .framebuffer = sw.framebuffer(),
+            .extent = sw.extent(),
+            .clear_colours {
+              vee::clear_colour(0, 0, 0, 0),
+            },
+          });
           vee::cmd_set_viewport(*scb, sw.extent());
           vee::cmd_set_scissor(*scb, sw.extent());
           vee::cmd_bind_gr_pipeline(*scb, *gp);
