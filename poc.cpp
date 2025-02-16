@@ -4,6 +4,7 @@
 
 import casein;
 import dotz;
+import hai;
 import vee;
 import voo;
 import vapp;
@@ -15,6 +16,8 @@ struct inst_t {
 
 struct : vapp {
   void run() override {
+    static constexpr const auto select_format = VK_FORMAT_R8G8B8A8_UNORM;;
+
     main_loop("yorg", [&](auto & dq) {
       voo::one_quad quad { dq.physical_device() };
       voo::host_buffer inst {
@@ -33,11 +36,13 @@ struct : vapp {
       auto rp = vee::create_render_pass(vee::create_render_pass_params {
         .attachments {{
           vee::create_colour_attachment(dq.physical_device(), dq.surface()),
+          vee::create_colour_attachment(select_format, vee::image_layout_read_only_optimal),
         }},
         .subpasses {{
           vee::create_subpass({
             .colours {{
               vee::create_attachment_ref(0, vee::image_layout_color_attachment_optimal),
+              vee::create_attachment_ref(1, vee::image_layout_color_attachment_optimal),
             }},
           }),
         }},
@@ -51,6 +56,10 @@ struct : vapp {
         .pipeline_layout = *pl,
         .render_pass = *rp,
         .depth_test = false,
+        .blends {
+          vee::colour_blend_classic(),
+          vee::colour_blend_none(),
+        },
         .shaders {
           voo::shader("poc.vert.spv").pipeline_vert_stage(),
           voo::shader("poc.frag.spv").pipeline_frag_stage(),
@@ -68,14 +77,23 @@ struct : vapp {
       voo::single_cb cb { dq.queue_family() };
       voo::frame_sync_stuff sync {};
       voo::swapchain sw { dq };
-      sw.create_framebuffers([&](auto iv) {
+      hai::array<voo::offscreen::colour_buffer> sel_buf { sw.count() };
+
+      sw.create_framebuffers([&](auto i, auto iv) {
+        sel_buf[i] = {
+          dq.physical_device(), sw.extent(), select_format,
+          vee::image_usage_colour_attachment,
+          vee::image_usage_transfer_src
+        };
+
         return vee::create_framebuffer({
           .physical_device = dq.physical_device(),
           .surface = dq.surface(),
           .render_pass = *rp,
-          .attachments {{ iv }},
+          .attachments {{ iv, sel_buf[i].image_view() }},
         });
       });
+
       extent_loop([&] {
         voo::present_guard pg { dq.queue(), &sw, &sync };
         {
@@ -86,6 +104,7 @@ struct : vapp {
             .framebuffer = sw.framebuffer(),
             .extent = sw.extent(),
             .clear_colours {
+              vee::clear_colour(0, 0, 0, 0),
               vee::clear_colour(0, 0, 0, 0),
             },
           });
