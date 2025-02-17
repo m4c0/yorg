@@ -74,6 +74,8 @@ struct : vapp {
         },
       });;
 
+      voo::host_buffer hbuf { dq.physical_device(), vee::create_transfer_dst_buffer(16) };
+
       voo::single_cb cb { dq.queue_family() };
       voo::frame_sync_stuff sync {};
       voo::swapchain sw { dq };
@@ -98,21 +100,27 @@ struct : vapp {
         voo::present_guard pg { dq.queue(), &sw, &sync };
         {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
-          auto scb = voo::cmd_render_pass({
-            .command_buffer = *pcb,
-            .render_pass = *rp,
-            .framebuffer = sw.framebuffer(),
-            .extent = sw.extent(),
-            .clear_colours {
-              vee::clear_colour(0, 0, 0, 0),
-              vee::clear_colour(0, 0, 0, 0),
-            },
-          });
-          vee::cmd_set_viewport(*scb, sw.extent());
-          vee::cmd_set_scissor(*scb, sw.extent());
-          vee::cmd_bind_gr_pipeline(*scb, *gp);
-          vee::cmd_bind_vertex_buffers(*scb, 1, inst.buffer());
-          quad.run(*scb, 0, 256);
+          {
+            auto scb = voo::cmd_render_pass({
+              .command_buffer = *pcb,
+              .render_pass = *rp,
+              .framebuffer = sw.framebuffer(),
+              .extent = sw.extent(),
+              .clear_colours {
+                vee::clear_colour(0, 0, 0, 0),
+                vee::clear_colour(0, 0, 0, 0),
+              },
+            });
+            vee::cmd_set_viewport(*scb, sw.extent());
+            vee::cmd_set_scissor(*scb, sw.extent());
+            vee::cmd_bind_gr_pipeline(*scb, *gp);
+            vee::cmd_bind_vertex_buffers(*scb, 1, inst.buffer());
+            quad.run(*scb, 0, 256);
+          }
+
+          int mx = casein::mouse_pos.x;
+          int my = casein::mouse_pos.y;
+          sel_buf[sw.index()].cmd_copy_to_host(*pcb, { mx, my }, { 1, 1 }, hbuf.buffer());
         }
         sync.queue_submit(dq.queue(), cb.cb());
       });
