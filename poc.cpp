@@ -36,7 +36,7 @@ struct : vapp {
       auto rp = vee::create_render_pass(vee::create_render_pass_params {
         .attachments {{
           vee::create_colour_attachment(dq.physical_device(), dq.surface()),
-          vee::create_colour_attachment(select_format, vee::image_layout_read_only_optimal),
+          vee::create_colour_attachment(select_format, vee::image_layout_transfer_src_optimal),
         }},
         .subpasses {{
           vee::create_subpass({
