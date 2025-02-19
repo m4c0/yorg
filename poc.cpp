@@ -5,9 +5,11 @@
 import casein;
 import dotz;
 import hai;
+import silog;
 import vee;
 import voo;
 import vapp;
+import wagen;
 
 static constexpr const auto inst_count = 256;
 struct inst_t {
@@ -120,9 +122,13 @@ struct : vapp {
 
           int mx = casein::mouse_pos.x;
           int my = casein::mouse_pos.y;
-          sel_buf[sw.index()].cmd_copy_to_host(*pcb, { mx, my }, { 1, 1 }, hbuf.buffer());
+          vee::cmd_copy_image_to_buffer(*pcb, { mx, my }, { 1, 1 }, sel_buf[sw.index()].image(), hbuf.buffer());
         }
         sync.queue_submit(dq.queue(), cb.cb());
+
+        voo::mapmem mm { hbuf.memory() };
+        auto * m = static_cast<unsigned char *>(*mm);
+        for (auto i = 0; i < 4; i++) silog::trace(m[i]);
       });
       dq.queue()->device_wait_idle();
     });

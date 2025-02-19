@@ -8,5 +8,5 @@ layout(location = 1) out vec4 select;
 
 void main() {
   colour = vec4(f_pos, 0, 1);
-  select = vec4(f_inst, 0, 0);
+  select = vec4(f_inst, 1, 1);
 }
