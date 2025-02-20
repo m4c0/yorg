@@ -14,6 +14,8 @@ void main() {
   p -= 8.0;
   p = p / 8.0;
 
+  p *= 0.9;
+
   gl_Position = vec4(p, 0, 1);
   f_pos = pos;
   f_inst = id;
