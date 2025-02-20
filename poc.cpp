@@ -18,7 +18,7 @@ struct inst_t {
 
 struct : vapp {
   void run() override {
-    static constexpr const auto select_format = VK_FORMAT_R8G8B8A8_UNORM;;
+    static constexpr const auto select_format = VK_FORMAT_R8G8B8A8_UNORM;
 
     main_loop("yorg", [&](auto & dq) {
       voo::one_quad quad { dq.physical_device() };
