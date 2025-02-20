@@ -120,8 +120,8 @@ struct : vapp {
             quad.run(*scb, 0, 256);
           }
 
-          int mx = casein::mouse_pos.x;
-          int my = casein::mouse_pos.y;
+          int mx = casein::mouse_pos.x * casein::screen_scale_factor;
+          int my = casein::mouse_pos.y * casein::screen_scale_factor;
           vee::cmd_copy_image_to_buffer(*pcb, { mx, my }, { 1, 1 }, sel_buf[sw.index()].image(), hbuf.buffer());
         }
         sync.queue_submit(dq.queue(), cb.cb());
