@@ -53,7 +53,10 @@ struct : vapp {
         }},
       });
 
-      auto pl = vee::create_pipeline_layout();
+      struct upc { float aspect; };
+      auto pl = vee::create_pipeline_layout(
+        { vee::vert_frag_push_constant_range<upc>() }
+      );
       auto gp = vee::create_graphics_pipeline({
         .pipeline_layout = *pl,
         .render_pass = *rp,
@@ -103,6 +106,7 @@ struct : vapp {
         {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
           {
+            upc pc { sw.aspect() };
             auto scb = voo::cmd_render_pass({
               .command_buffer = *pcb,
               .render_pass = *rp,
@@ -115,6 +119,7 @@ struct : vapp {
             });
             vee::cmd_set_viewport(*scb, sw.extent());
             vee::cmd_set_scissor(*scb, sw.extent());
+            vee::cmd_push_vert_frag_constants(*scb, *pl, &pc);
             vee::cmd_bind_gr_pipeline(*scb, *gp);
             vee::cmd_bind_vertex_buffers(*scb, 1, inst.buffer());
             quad.run(*scb, 0, 256);
