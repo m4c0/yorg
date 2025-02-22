@@ -13,7 +13,7 @@ import wagen;
 
 static constexpr const auto inst_count = 256;
 struct inst_t {
-  dotz::vec2 pos;
+  unsigned id;
 };
 
 struct : vapp {
@@ -30,10 +30,13 @@ struct : vapp {
         )
       };
 
-      //{
-      //  voo::mapmem mm { inst.memory() };
-      //  auto * ptr = static_cast<inst_t *>(*mm);
-      //}
+      {
+        voo::mapmem mm { inst.memory() };
+        auto * ptr = static_cast<inst_t *>(*mm);
+        for (auto i = 0; i < inst_count; i++) {
+          ptr[i].id = i % 2;
+        }
+      }
 
       auto rp = vee::create_render_pass(vee::create_render_pass_params {
         .attachments {{
@@ -75,7 +78,7 @@ struct : vapp {
         },
         .attributes {
           quad.vertex_attribute(0),
-          vee::vertex_attribute_vec2(1, 0),
+          vee::vertex_attribute_uint(1, 0),
         },
       });;
 
