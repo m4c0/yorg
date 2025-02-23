@@ -1,5 +1,7 @@
 #version 450
 
+layout(set = 0, binding = 0) uniform sampler2D terrain;
+
 layout(location = 0) in vec2 f_pos;
 layout(location = 1) in flat int f_inst;
 layout(location = 2) in flat uint f_id;

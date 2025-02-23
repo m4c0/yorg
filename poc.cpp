@@ -29,7 +29,6 @@ struct : vapp {
           vee::buffer_usage::vertex_buffer
         )
       };
-
       {
         voo::mapmem mm { inst.memory() };
         auto * ptr = static_cast<inst_t *>(*mm);
@@ -37,6 +36,22 @@ struct : vapp {
           ptr[i].id = i % 2;
         }
       }
+
+      voo::h2l_image terrain {
+        dq.physical_device(), 16, 16, VK_FORMAT_R8G8B8A8_SRGB
+      };
+      {
+        voo::mapmem mm { terrain.host_memory() };
+        auto * ptr = static_cast<unsigned *>(*mm);
+        ptr[0] = 0xFF007700;
+        ptr[1] = 0xFF770000;
+      }
+      voo::single_cb load_cb { dq.queue_family() };
+      {
+        voo::cmd_buf_one_time_submit ots { load_cb.cb() };
+        terrain.setup_copy(load_cb.cb());
+      }
+      dq.queue()->queue_submit({ .command_buffer = load_cb.cb() });
 
       auto rp = vee::create_render_pass(vee::create_render_pass_params {
         .attachments {{
@@ -56,8 +71,17 @@ struct : vapp {
         }},
       });
 
+      vee::sampler smp = vee::create_sampler(vee::linear_sampler);
+
+      voo::single_dset ds {
+        vee::dsl_fragment_sampler(),
+        vee::combined_image_sampler(),
+      };
+      vee::update_descriptor_set(ds.descriptor_set(), 0, terrain.iv(), *smp);
+
       struct upc { float aspect; };
       auto pl = vee::create_pipeline_layout(
+        { ds.descriptor_set_layout() },
         { vee::vert_frag_push_constant_range<upc>() }
       );
       auto gp = vee::create_graphics_pipeline({
@@ -123,6 +147,7 @@ struct : vapp {
             vee::cmd_set_viewport(*scb, sw.extent());
             vee::cmd_set_scissor(*scb, sw.extent());
             vee::cmd_push_vert_frag_constants(*scb, *pl, &pc);
+            vee::cmd_bind_descriptor_set(*scb, *pl, 0, ds.descriptor_set());
             vee::cmd_bind_gr_pipeline(*scb, *gp);
             vee::cmd_bind_vertex_buffers(*scb, 1, inst.buffer());
             quad.run(*scb, 0, 256);
