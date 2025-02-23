@@ -159,9 +159,9 @@ struct : vapp {
         }
         sync.queue_submit(dq.queue(), cb.cb());
 
-        voo::mapmem mm { hbuf.memory() };
-        auto * m = static_cast<unsigned char *>(*mm);
-        for (auto i = 0; i < 4; i++) silog::trace(m[i]);
+        //voo::mapmem mm { hbuf.memory() };
+        //auto * m = static_cast<unsigned char *>(*mm);
+        //for (auto i = 0; i < 4; i++) silog::trace(m[i]);
       });
       dq.queue()->device_wait_idle();
     });
