@@ -71,7 +71,7 @@ struct : vapp {
         }},
       });
 
-      vee::sampler smp = vee::create_sampler(vee::linear_sampler);
+      vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
 
       voo::single_dset ds {
         vee::dsl_fragment_sampler(),
