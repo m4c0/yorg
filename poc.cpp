@@ -14,7 +14,7 @@ import wagen;
 
 static constexpr const auto inst_count = 256;
 struct inst_t {
-  unsigned id;
+  dotz::vec2 id;
 };
 
 static constexpr const jute::view map {
@@ -38,11 +38,11 @@ static constexpr const jute::view map {
 static_assert(map.size() == 256);
 
 static const class uv_map {
-  unsigned m_data[256];
+  dotz::vec2 m_data[256];
 public:
   constexpr uv_map() {
-    m_data['X'] = 1;
-    m_data['.'] = 0;
+    m_data['X'] = { 0, 0 };
+    m_data['.'] = { 1, 0 };
   }
   auto operator[](unsigned idx) const { return m_data[idx]; };
 } uvs {};
@@ -133,7 +133,7 @@ struct : vapp {
         },
         .attributes {
           quad.vertex_attribute(0),
-          vee::vertex_attribute_uint(1, 0),
+          vee::vertex_attribute_vec2(1, 0),
         },
       });;
 
