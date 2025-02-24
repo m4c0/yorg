@@ -5,6 +5,7 @@
 import casein;
 import dotz;
 import hai;
+import jute;
 import silog;
 import vee;
 import voo;
@@ -15,6 +16,36 @@ static constexpr const auto inst_count = 256;
 struct inst_t {
   unsigned id;
 };
+
+static constexpr const jute::view map {
+ "................"
+ "................"
+ "....XXX........."
+ "..XXXXX........."
+ "..XXX..........."
+ "...XXXX........."
+ "....X..........."
+ "................"
+ "................"
+ "................"
+ "................"
+ "................"
+ "................"
+ "................"
+ "................"
+ "................"
+};
+static_assert(map.size() == 256);
+
+static const class uv_map {
+  unsigned m_data[256];
+public:
+  constexpr uv_map() {
+    m_data['X'] = 1;
+    m_data['.'] = 0;
+  }
+  auto operator[](unsigned idx) const { return m_data[idx]; };
+} uvs {};
 
 struct : vapp {
   void run() override {
@@ -33,7 +64,7 @@ struct : vapp {
         voo::mapmem mm { inst.memory() };
         auto * ptr = static_cast<inst_t *>(*mm);
         for (auto i = 0; i < inst_count; i++) {
-          ptr[i].id = i % 2;
+          ptr[i].id = uvs[map[i]];
         }
       }
 
