@@ -47,7 +47,7 @@ struct : vapp {
   void run() override {
     main_loop("yorg", [&](auto & dq) {
       spr::system spr { dq.physical_device(), dq.surface() };
-      spr.mapmem([](spr::inst * ptr) -> void {
+      spr.mapmem(256, [](spr::inst * ptr) -> void {
         for (auto i = 0; i < 256; i++) {
           ptr[i] = {
             .pos { i % 16, i / 16 },

@@ -15,8 +15,7 @@ namespace spr {
   struct upc { float aspect; };
 
   export class system {
-    static constexpr const auto inst_count = 256;
-    static constexpr const auto max_inst_count = inst_count;
+    static constexpr const auto max_inst_count = 1024;
 
     voo::single_dset m_ds {
       vee::dsl_fragment_sampler(),
@@ -29,6 +28,8 @@ namespace spr {
     vee::render_pass m_rp;
     vee::pipeline_layout m_pl;
     vee::gr_pipeline m_ppl;
+
+    unsigned m_count {};
 
   public:
     system(vee::physical_device pd, vee::surface::type s)
@@ -87,7 +88,9 @@ namespace spr {
 
     auto render_pass() const { return *m_rp; }
 
-    void mapmem(traits::is_callable<inst *> auto fn) {
+    void mapmem(unsigned count, traits::is_callable<inst *> auto fn) {
+      m_count = count;
+
       voo::mapmem mm { m_inst.memory() };
       fn(static_cast<inst *>(*mm));
     }
@@ -114,7 +117,7 @@ namespace spr {
       vee::cmd_bind_descriptor_set(*scb, *m_pl, 0, m_ds.descriptor_set());
       vee::cmd_bind_gr_pipeline(*scb, *m_ppl);
       vee::cmd_bind_vertex_buffers(*scb, 1, m_inst.buffer());
-      m_quad.run(*scb, 0, inst_count);
+      m_quad.run(*scb, 0, m_count);
     }
   };
 }
