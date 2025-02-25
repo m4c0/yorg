@@ -2,6 +2,7 @@
 #pragma leco add_shader "poc.frag"
 #pragma leco add_shader "poc.vert"
 
+import atlas;
 import casein;
 import dotz;
 import hai;
@@ -37,8 +38,8 @@ static const class uv_map {
   dotz::vec2 m_data[256];
 public:
   constexpr uv_map() {
-    m_data['X'] = { 0, 0 };
-    m_data['.'] = { 1, 0 };
+    m_data['X'] = atlas::id_to_uv(0);
+    m_data['.'] = atlas::id_to_uv(1);
   }
   auto operator[](unsigned idx) const { return m_data[idx]; };
 } uvs {};
@@ -56,24 +57,14 @@ struct : vapp {
         }
       });
 
-      voo::h2l_image terrain {
-        dq.physical_device(), 16, 16, VK_FORMAT_R8G8B8A8_SRGB
-      };
-      {
-        voo::mapmem mm { terrain.host_memory() };
-        auto * ptr = static_cast<unsigned *>(*mm);
+      atlas::t atlas { dq.physical_device(), dq.queue_family() };
+      atlas.mapmem(dq.queue(), [](auto * ptr) {
         ptr[0] = 0xFF007700;
         ptr[1] = 0xFF770000;
-      }
-      voo::single_cb load_cb { dq.queue_family() };
-      {
-        voo::cmd_buf_one_time_submit ots { load_cb.cb() };
-        terrain.setup_copy(load_cb.cb());
-      }
-      dq.queue()->queue_submit({ .command_buffer = load_cb.cb() });
+      });
 
       vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
-      spr.update_atlas(terrain.iv(), *smp);
+      spr.update_atlas(atlas.image_view(), *smp);
 
       voo::host_buffer hbuf { dq.physical_device(), vee::create_transfer_dst_buffer(16) };
 
