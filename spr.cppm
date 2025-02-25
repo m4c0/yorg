@@ -114,7 +114,7 @@ namespace spr {
       vee::cmd_bind_descriptor_set(*scb, *m_pl, 0, m_ds.descriptor_set());
       vee::cmd_bind_gr_pipeline(*scb, *m_ppl);
       vee::cmd_bind_vertex_buffers(*scb, 1, m_inst.buffer());
-      m_quad.run(*scb, 0, 256);
+      m_quad.run(*scb, 0, inst_count);
     }
   };
 }
