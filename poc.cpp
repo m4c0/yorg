@@ -34,16 +34,6 @@ static constexpr const jute::view map {
 };
 static_assert(map.size() == 256);
 
-static const class uv_map {
-  dotz::vec2 m_data[256];
-public:
-  constexpr uv_map() {
-    m_data['X'] = atlas::id_to_uv(0);
-    m_data['.'] = atlas::id_to_uv(1);
-  }
-  auto operator[](unsigned idx) const { return m_data[idx]; };
-} uvs {};
-
 struct : vapp {
   void run() override {
     main_loop("yorg", [&](auto & dq) {
@@ -52,15 +42,15 @@ struct : vapp {
         for (auto i = 0; i < 256; i++) {
           ptr[i] = {
             .pos { i % 16, i / 16 },
-            .uv = uvs[map[i]],
+            .uv = atlas::id_to_uv(map[i]),
           };
         }
       });
 
       atlas::t atlas { dq.physical_device(), dq.queue_family() };
       atlas.mapmem(dq.queue(), [](auto * ptr) {
-        ptr[0] = 0xFF007700;
-        ptr[1] = 0xFF770000;
+        ptr['X'] = 0xFF007700;
+        ptr['.'] = 0xFF770000;
       });
 
       vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
