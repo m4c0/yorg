@@ -14,7 +14,8 @@ import wagen;
 
 static constexpr const auto inst_count = 256;
 struct inst_t {
-  dotz::vec2 id;
+  dotz::vec2 pos;
+  dotz::vec2 uv;
 };
 
 static constexpr const jute::view map {
@@ -64,7 +65,10 @@ struct : vapp {
         voo::mapmem mm { inst.memory() };
         auto * ptr = static_cast<inst_t *>(*mm);
         for (auto i = 0; i < inst_count; i++) {
-          ptr[i].id = uvs[map[i]];
+          ptr[i] = inst_t {
+            .pos { i % 16, i / 16 },
+            .uv = uvs[map[i]],
+          };
         }
       }
 
@@ -134,6 +138,7 @@ struct : vapp {
         .attributes {
           quad.vertex_attribute(0),
           vee::vertex_attribute_vec2(1, 0),
+          vee::vertex_attribute_vec2(1, sizeof(dotz::vec2)),
         },
       });;
 
