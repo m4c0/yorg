@@ -34,6 +34,11 @@ static constexpr const jute::view map {
 };
 static_assert(map.size() == 256);
 
+enum class uv_ids : unsigned char {
+  soldier   = 1,
+};
+static constexpr auto _(uv_ids e) { return static_cast<unsigned char>(e); }
+
 enum class spr_ids : unsigned {
   map_begin = 0,
   map_end = map_begin + 256 - 1,
@@ -56,15 +61,16 @@ struct : vapp {
         }
         ptr[_(spr_ids::soldier)] = {
           .pos { 3, 1 },
-          .uv = atlas::id_to_uv('O'),
+          .uv = atlas::id_to_uv(_(uv_ids::soldier)),
         };
       });
 
       atlas::t atlas { dq.physical_device(), dq.queue_family() };
       atlas.mapmem(dq.queue(), [](auto * ptr) {
-        ptr['O'] = 0xFF000077;
         ptr['X'] = 0xFF007700;
         ptr['.'] = 0xFF770000;
+
+        ptr[_(uv_ids::soldier)] = 0xFF000077;
       });
 
       vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
