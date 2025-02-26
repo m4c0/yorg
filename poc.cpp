@@ -34,21 +34,35 @@ static constexpr const jute::view map {
 };
 static_assert(map.size() == 256);
 
+enum class spr_ids : unsigned {
+  map_begin = 0,
+  map_end = map_begin + 256 - 1,
+  soldier,
+
+  max,
+};
+static constexpr auto _(spr_ids e) { return static_cast<unsigned>(e); }
+
 struct : vapp {
   void run() override {
     main_loop("yorg", [&](auto & dq) {
       spr::system spr { dq.physical_device(), dq.surface() };
-      spr.mapmem(256, [](spr::inst * ptr) -> void {
+      spr.mapmem(_(spr_ids::max), [](spr::inst * ptr) -> void {
         for (auto i = 0; i < 256; i++) {
           ptr[i] = {
             .pos { i % 16, i / 16 },
             .uv = atlas::id_to_uv(map[i]),
           };
         }
+        ptr[_(spr_ids::soldier)] = {
+          .pos { 3, 1 },
+          .uv = atlas::id_to_uv('O'),
+        };
       });
 
       atlas::t atlas { dq.physical_device(), dq.queue_family() };
       atlas.mapmem(dq.queue(), [](auto * ptr) {
+        ptr['O'] = 0xFF000077;
         ptr['X'] = 0xFF007700;
         ptr['.'] = 0xFF770000;
       });
