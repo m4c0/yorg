@@ -1,3 +1,5 @@
+#pragma leco add_shader "spr.frag"
+#pragma leco add_shader "spr.vert"
 export module spr;
 import dotz;
 import traits;
@@ -71,8 +73,8 @@ namespace spr {
           vee::colour_blend_none(),
         },
         .shaders {
-          voo::shader("poc.vert.spv").pipeline_vert_stage(),
-          voo::shader("poc.frag.spv").pipeline_frag_stage(),
+          voo::shader("spr.vert.spv").pipeline_vert_stage(),
+          voo::shader("spr.frag.spv").pipeline_frag_stage(),
         },
         .bindings {
           m_quad.vertex_input_bind(),
