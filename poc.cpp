@@ -34,6 +34,7 @@ static_assert(map.size() == 256);
 
 enum class uv_ids : unsigned char {
   soldier   = 1,
+  selection,
 };
 static constexpr auto _(uv_ids e) { return static_cast<unsigned char>(e); }
 
@@ -41,27 +42,38 @@ enum class spr_ids : unsigned {
   map_begin = 0,
   map_end = map_begin + 256 - 1,
   soldier,
+  selection,
 
   max,
 };
 static constexpr auto _(spr_ids e) { return static_cast<unsigned>(e); }
 
+static unsigned sel = -1;
+
+static void update_sprites(spr::system & spr) {
+  spr.mapmem(_(spr_ids::max), [](spr::inst * ptr) -> void {
+    for (auto i = 0; i < 256; i++) {
+      ptr[i] = {
+        .pos { i % 16, i / 16 },
+        .uv = atlas::id_to_uv(map[i]),
+      };
+    }
+    ptr[_(spr_ids::soldier)] = {
+      .pos { 3, 1 },
+      .uv = atlas::id_to_uv(_(uv_ids::soldier)),
+    };
+    ptr[_(spr_ids::selection)] = {
+      .pos { sel % 16, sel / 16 },
+      .uv = atlas::id_to_uv(_(uv_ids::selection)),
+    };
+  });
+}
+
 struct : vapp {
   void run() override {
     main_loop("yorg", [&](auto & dq) {
       spr::system spr { dq.physical_device(), dq.surface() };
-      spr.mapmem(_(spr_ids::max), [](spr::inst * ptr) -> void {
-        for (auto i = 0; i < 256; i++) {
-          ptr[i] = {
-            .pos { i % 16, i / 16 },
-            .uv = atlas::id_to_uv(map[i]),
-          };
-        }
-        ptr[_(spr_ids::soldier)] = {
-          .pos { 3, 1 },
-          .uv = atlas::id_to_uv(_(uv_ids::soldier)),
-        };
-      });
+      update_sprites(spr);
 
       atlas::t atlas { dq.physical_device(), dq.queue_family() };
       atlas.mapmem(dq.queue(), [](auto * ptr) {
@@ -69,6 +81,7 @@ struct : vapp {
         ptr['.'] = 0xFF770000;
 
         ptr[_(uv_ids::soldier)] = 0xFF000077;
+        ptr[_(uv_ids::selection)] = 0x77777777;
       });
 
       vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
@@ -108,9 +121,11 @@ struct : vapp {
         }
         sync.queue_submit(dq.queue(), cb.cb());
 
-        //voo::mapmem mm { hbuf.memory() };
-        //auto * m = static_cast<unsigned char *>(*mm);
-        //for (auto i = 0; i < 4; i++) silog::trace(m[i]);
+        voo::mapmem mm { hbuf.memory() };
+        auto * m = static_cast<unsigned char *>(*mm);
+        auto nsel = m[3] ? m[0] : -1;
+        if (nsel != sel) update_sprites(spr);
+        sel = nsel;
       });
       dq.queue()->device_wait_idle();
     });
