@@ -52,6 +52,8 @@ static void update_sprites(spr::system & spr) {
       .pos { 3, 1 },
       .uv = atlas::id_to_uv(_(uv_ids::soldier)),
     };
+    if (g_sel == -1) return ptr;
+
     *ptr++ = {
       .pos { g_sel % 16, g_sel / 16 },
       .uv = atlas::id_to_uv(_(uv_ids::selection)),
@@ -125,10 +127,10 @@ struct : vapp {
         if (mouse_in) {
           voo::mapmem mm { hbuf.memory() };
           auto * m = static_cast<unsigned char *>(*mm);
-          unsigned nsel = m[3] ? m[0] : -1;
+          int nsel = m[3] ? static_cast<unsigned>(m[0]) : -1;
           if (nsel != g_sel) update_sprites(spr);
           g_sel = nsel;
-        }
+        } else g_sel = -1;
       });
       dq.queue()->device_wait_idle();
     });
