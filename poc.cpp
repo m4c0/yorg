@@ -115,8 +115,8 @@ struct : vapp {
           spr.cmd_render_pass(cb.cb(), sw);
 
           if (mouse_in) {
-            int mx = casein::mouse_pos.x * casein::screen_scale_factor;
-            int my = casein::mouse_pos.y * casein::screen_scale_factor;
+            int mx = mouse.x * casein::screen_scale_factor;
+            int my = mouse.y * casein::screen_scale_factor;
             vee::cmd_copy_image_to_buffer(*pcb, { mx, my }, { 1, 1 }, sel_buf[sw.index()].image(), hbuf.buffer());
           }
         }
