@@ -2,6 +2,7 @@
 
 import atlas;
 import casein;
+import cursor;
 import dotz;
 import hai;
 import jute;
@@ -68,6 +69,8 @@ struct : vapp {
     casein::interrupt(casein::IRQ_CURSOR);
 
     main_loop("yorg", [&](auto & dq) {
+      cursor::t cur {};
+
       spr::system spr { dq.physical_device(), dq.surface() };
       update_sprites(spr);
 
