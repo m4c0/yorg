@@ -110,22 +110,31 @@ struct : vapp {
       });
 
       extent_loop([&] {
+        auto mouse = casein::mouse_pos;
+        bool mouse_in =
+          mouse.x >= 0 && mouse.x < casein::window_size.x &&
+          mouse.y >= 0 && mouse.y < casein::window_size.y;
+
         voo::present_guard pg { dq.queue(), &sw, &sync };
         {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
           spr.cmd_render_pass(cb.cb(), sw);
 
-          int mx = casein::mouse_pos.x * casein::screen_scale_factor;
-          int my = casein::mouse_pos.y * casein::screen_scale_factor;
-          vee::cmd_copy_image_to_buffer(*pcb, { mx, my }, { 1, 1 }, sel_buf[sw.index()].image(), hbuf.buffer());
+          if (mouse_in) {
+            int mx = casein::mouse_pos.x * casein::screen_scale_factor;
+            int my = casein::mouse_pos.y * casein::screen_scale_factor;
+            vee::cmd_copy_image_to_buffer(*pcb, { mx, my }, { 1, 1 }, sel_buf[sw.index()].image(), hbuf.buffer());
+          }
         }
         sync.queue_submit(dq.queue(), cb.cb());
 
-        voo::mapmem mm { hbuf.memory() };
-        auto * m = static_cast<unsigned char *>(*mm);
-        auto nsel = m[3] ? m[0] : -1;
-        if (nsel != sel) update_sprites(spr);
-        sel = nsel;
+        if (mouse_in) {
+          voo::mapmem mm { hbuf.memory() };
+          auto * m = static_cast<unsigned char *>(*mm);
+          auto nsel = m[3] ? m[0] : -1;
+          if (nsel != sel) update_sprites(spr);
+          sel = nsel;
+        }
       });
       dq.queue()->device_wait_idle();
     });
