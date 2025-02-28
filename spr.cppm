@@ -32,6 +32,8 @@ namespace spr {
     vee::pipeline_layout m_pl;
     vee::gr_pipeline m_ppl;
 
+    voo::host_buffer m_pick;
+
     hai::array<vee::framebuffer> m_fbs;
     hai::array<voo::offscreen::colour_buffer> m_sel;
 
@@ -90,6 +92,7 @@ namespace spr {
           vee::vertex_attribute_vec2(1, sizeof(dotz::vec2)),
         },
       }) }
+      , m_pick { pd, vee::create_transfer_dst_buffer(sizeof(unsigned)) }
       , m_fbs { sw.count() }
       , m_sel { sw.count() }
     {
@@ -141,8 +144,14 @@ namespace spr {
       m_quad.run(*scb, 0, m_count);
     }
 
-    void cmd_copy_to_buffer(vee::command_buffer cb, const voo::swapchain & sw, int mx, int my, vee::buffer::type hbuf) {
-      vee::cmd_copy_image_to_buffer(cb, { mx, my }, { 1, 1 }, m_sel[sw.index()].image(), hbuf);
+    void cmd_copy_to_buffer(vee::command_buffer cb, const voo::swapchain & sw, int mx, int my) {
+      vee::cmd_copy_image_to_buffer(cb, { mx, my }, { 1, 1 }, m_sel[sw.index()].image(), m_pick.buffer());
+    }
+
+    int pick() {
+      voo::mapmem mm { m_pick.memory() };
+      auto * m = static_cast<unsigned char *>(*mm);
+      return m[3] ? static_cast<unsigned>(m[0]) : -1;
     }
   };
 }

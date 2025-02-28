@@ -78,8 +78,6 @@ struct : vapp {
         ptr[_(uv_ids::selection)] = 0x77777777;
       });
 
-      voo::host_buffer hbuf { dq.physical_device(), vee::create_transfer_dst_buffer(16) };
-
       voo::single_cb cb { dq.queue_family() };
       voo::frame_sync_stuff sync {};
       voo::swapchain sw { dq };
@@ -104,17 +102,15 @@ struct : vapp {
         {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
           spr.cmd_render_pass(cb.cb(), sw);
-          if (mouse_in) spr.cmd_copy_to_buffer(cb.cb(), sw, mx, my, hbuf.buffer());
+          if (mouse_in) spr.cmd_copy_to_buffer(cb.cb(), sw, mx, my);
           cur.run(cb.cb(), sw);
         }
         sync.queue_submit(dq.queue(), cb.cb());
 
         // XXX: Should this be inside the present guard?
         if (mouse_in) {
-          voo::mapmem mm { hbuf.memory() };
-          auto * m = static_cast<unsigned char *>(*mm);
-          int nsel = m[3] ? static_cast<unsigned>(m[0]) : -1;
-          if (nsel != g_sel) update_sprites(spr);
+          int nsel = spr.pick();
+          if (nsel > 0 && nsel != g_sel) update_sprites(spr);
           g_sel = nsel;
         } else g_sel = -1;
       });
