@@ -22,7 +22,26 @@ namespace cursor {
 
   public:
     explicit t(const voo::device_and_queue * dq, const voo::swapchain & sw)
-      : m_rp { vee::create_depthless_render_pass(dq->physical_device(), dq->surface()),}
+      : m_rp { 
+        vee::create_render_pass({
+          .attachments {{
+            vee::create_colour_attachment({
+              .format = vee::find_best_surface_image_format(dq->physical_device(), dq->surface()),
+              .load_op = vee::attachment_load_op_load,
+              .store_op = vee::attachment_store_op_store,
+              .final_layout = vee::image_layout_present_src_khr,
+            }),
+          }},
+          .subpasses {{
+            vee::create_subpass({
+              .colours {{ vee::create_attachment_ref(0, vee::image_layout_color_attachment_optimal) }},
+            }),
+          }},
+          .dependencies {{
+            vee::create_colour_dependency(),
+          }},
+        })
+      }
       , m_oqr { "cursor", dq->physical_device(), *m_rp, *m_pl }
       , m_fbs { sw.create_framebuffers(*m_rp) }
     {}
