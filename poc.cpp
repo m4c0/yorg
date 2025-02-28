@@ -48,7 +48,7 @@ enum class spr_ids : unsigned {
 };
 static constexpr auto _(spr_ids e) { return static_cast<unsigned>(e); }
 
-static unsigned sel = -1;
+static unsigned g_sel = -1;
 
 static void update_sprites(spr::system & spr) {
   spr.mapmem(_(spr_ids::max), [](spr::inst * ptr) -> void {
@@ -63,7 +63,7 @@ static void update_sprites(spr::system & spr) {
       .uv = atlas::id_to_uv(_(uv_ids::soldier)),
     };
     ptr[_(spr_ids::selection)] = {
-      .pos { sel % 16, sel / 16 },
+      .pos { g_sel % 16, g_sel / 16 },
       .uv = atlas::id_to_uv(_(uv_ids::selection)),
     };
   });
@@ -131,9 +131,9 @@ struct : vapp {
         if (mouse_in) {
           voo::mapmem mm { hbuf.memory() };
           auto * m = static_cast<unsigned char *>(*mm);
-          auto nsel = m[3] ? m[0] : -1;
-          if (nsel != sel) update_sprites(spr);
-          sel = nsel;
+          unsigned nsel = m[3] ? m[0] : -1;
+          if (nsel != g_sel) update_sprites(spr);
+          g_sel = nsel;
         }
       });
       dq.queue()->device_wait_idle();
