@@ -69,7 +69,7 @@ struct : vapp {
     casein::interrupt(casein::IRQ_CURSOR);
 
     main_loop("yorg", [&](auto & dq) {
-      cursor::t cur {};
+      cursor::t cur { &dq };
 
       spr::system spr { dq.physical_device(), dq.surface() };
       update_sprites(spr);
@@ -124,9 +124,12 @@ struct : vapp {
             int my = mouse.y * casein::screen_scale_factor;
             vee::cmd_copy_image_to_buffer(*pcb, { mx, my }, { 1, 1 }, sel_buf[sw.index()].image(), hbuf.buffer());
           }
+
+          cur.run(cb.cb(), sw);
         }
         sync.queue_submit(dq.queue(), cb.cb());
 
+        // XXX: Should this be inside the present guard?
         if (mouse_in) {
           voo::mapmem mm { hbuf.memory() };
           auto * m = static_cast<unsigned char *>(*mm);
