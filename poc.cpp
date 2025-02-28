@@ -104,7 +104,7 @@ struct : vapp {
         {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
           spr.cmd_render_pass(cb.cb(), sw);
-          spr.cmd_copy_to_buffer(cb.cb(), sw, mx, my, hbuf.buffer());
+          if (mouse_in) spr.cmd_copy_to_buffer(cb.cb(), sw, mx, my, hbuf.buffer());
           cur.run(cb.cb(), sw);
         }
         sync.queue_submit(dq.queue(), cb.cb());
