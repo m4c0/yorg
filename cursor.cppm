@@ -1,6 +1,7 @@
 #pragma leco add_shader "cursor.frag"
 #pragma leco add_shader "cursor.vert"
 export module cursor;
+import casein;
 import dotz;
 import hai;
 import vee;
@@ -27,7 +28,10 @@ namespace cursor {
     {}
 
     void run(vee::command_buffer cb, voo::swapchain & sw) {
-      upc pc {};
+      upc pc {
+        .anchor = casein::mouse_pos,
+        .window_size = casein::window_size,
+      };
       auto scb = voo::cmd_render_pass(vee::render_pass_begin {
         .command_buffer = cb,
         .render_pass = *m_rp,
