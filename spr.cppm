@@ -2,6 +2,7 @@
 #pragma leco add_shader "spr.vert"
 export module spr;
 import dotz;
+import hai;
 import traits;
 import vee;
 import voo;
@@ -31,10 +32,13 @@ namespace spr {
     vee::pipeline_layout m_pl;
     vee::gr_pipeline m_ppl;
 
+    hai::array<vee::framebuffer> m_fbs;
+    hai::array<voo::offscreen::colour_buffer> m_sel;
+
     unsigned m_count {};
 
   public:
-    system(vee::physical_device pd, vee::surface::type s)
+    system(vee::physical_device pd, vee::surface::type s, const voo::swapchain & sw)
       : m_inst {
         pd,
         vee::create_buffer(
@@ -86,7 +90,23 @@ namespace spr {
           vee::vertex_attribute_vec2(1, sizeof(dotz::vec2)),
         },
       }) }
-    {}
+      , m_fbs { sw.count() }
+      , m_sel { sw.count() }
+    {
+      for (auto i = 0; i < m_fbs.size(); i++) {
+        m_sel[i] = {
+          pd, sw.extent(), spr::select_format,
+          vee::image_usage_colour_attachment,
+          vee::image_usage_transfer_src
+        };
+
+        m_fbs[i] = vee::create_framebuffer({
+          .render_pass = *m_rp,
+          .attachments {{ sw.image_view(i), m_sel[i].image_view() }},
+          .extent = sw.extent(),
+        });
+      }
+    }
 
     auto render_pass() const { return *m_rp; }
 
@@ -105,7 +125,7 @@ namespace spr {
       auto scb = voo::cmd_render_pass({
         .command_buffer = cb,
         .render_pass = *m_rp,
-        .framebuffer = sw.framebuffer(),
+        .framebuffer = *m_fbs[sw.index()],
         .extent = sw.extent(),
         .clear_colours {
           vee::clear_colour(0, 0, 0, 0),
@@ -119,6 +139,10 @@ namespace spr {
       vee::cmd_bind_gr_pipeline(*scb, *m_ppl);
       vee::cmd_bind_vertex_buffers(*scb, 1, m_inst.buffer());
       m_quad.run(*scb, 0, m_count);
+    }
+
+    void cmd_copy_to_buffer(vee::command_buffer cb, const voo::swapchain & sw, int mx, int my, vee::buffer::type hbuf) {
+      vee::cmd_copy_image_to_buffer(cb, { mx, my }, { 1, 1 }, m_sel[sw.index()].image(), hbuf);
     }
   };
 }

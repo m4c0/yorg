@@ -69,11 +69,6 @@ struct : vapp {
     casein::interrupt(casein::IRQ_CURSOR);
 
     main_loop("yorg", [&](auto & dq) {
-      cursor::t cur { &dq };
-
-      spr::system spr { dq.physical_device(), dq.surface() };
-      update_sprites(spr);
-
       atlas::t atlas { dq.physical_device(), dq.queue_family() };
       atlas.mapmem(dq.queue(), [](auto * ptr) {
         ptr['X'] = 0xFF007700;
@@ -83,48 +78,33 @@ struct : vapp {
         ptr[_(uv_ids::selection)] = 0x77777777;
       });
 
-      vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
-      spr.update_atlas(atlas.image_view(), *smp);
-
       voo::host_buffer hbuf { dq.physical_device(), vee::create_transfer_dst_buffer(16) };
 
       voo::single_cb cb { dq.queue_family() };
       voo::frame_sync_stuff sync {};
       voo::swapchain sw { dq };
-      hai::array<voo::offscreen::colour_buffer> sel_buf { sw.count() };
 
-      sw.create_framebuffers([&](auto i, auto iv) {
-        sel_buf[i] = {
-          dq.physical_device(), sw.extent(), spr::select_format,
-          vee::image_usage_colour_attachment,
-          vee::image_usage_transfer_src
-        };
+      cursor::t cur { &dq, sw };
 
-        return vee::create_framebuffer({
-          .physical_device = dq.physical_device(),
-          .surface = dq.surface(),
-          .render_pass = spr.render_pass(),
-          .attachments {{ iv, sel_buf[i].image_view() }},
-        });
-      });
+      spr::system spr { dq.physical_device(), dq.surface(), sw };
+      update_sprites(spr);
+
+      vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
+      spr.update_atlas(atlas.image_view(), *smp);
 
       extent_loop([&] {
         auto mouse = casein::mouse_pos;
         bool mouse_in =
           mouse.x >= 0 && mouse.x < casein::window_size.x &&
           mouse.y >= 0 && mouse.y < casein::window_size.y;
+        int mx = mouse.x * casein::screen_scale_factor;
+        int my = mouse.y * casein::screen_scale_factor;
 
         voo::present_guard pg { dq.queue(), &sw, &sync };
         {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
           spr.cmd_render_pass(cb.cb(), sw);
-
-          if (mouse_in) {
-            int mx = mouse.x * casein::screen_scale_factor;
-            int my = mouse.y * casein::screen_scale_factor;
-            vee::cmd_copy_image_to_buffer(*pcb, { mx, my }, { 1, 1 }, sel_buf[sw.index()].image(), hbuf.buffer());
-          }
-
+          spr.cmd_copy_to_buffer(cb.cb(), sw, mx, my, hbuf.buffer());
           cur.run(cb.cb(), sw);
         }
         sync.queue_submit(dq.queue(), cb.cb());
