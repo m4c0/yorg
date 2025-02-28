@@ -90,11 +90,10 @@ namespace spr {
 
     auto render_pass() const { return *m_rp; }
 
-    void mapmem(unsigned count, traits::is_callable<inst *> auto fn) {
-      m_count = count;
-
+    void mapmem(traits::is_callable_r<inst *, inst *> auto fn) {
       voo::mapmem mm { m_inst.memory() };
-      fn(static_cast<inst *>(*mm));
+      auto ptr = static_cast<inst *>(*mm);
+      m_count = fn(ptr) - ptr;
     }
 
     void update_atlas(vee::image_view::type iv, vee::sampler::type smp) {

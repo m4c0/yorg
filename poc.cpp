@@ -38,39 +38,33 @@ enum class uv_ids : unsigned char {
 };
 static constexpr auto _(uv_ids e) { return static_cast<unsigned char>(e); }
 
-enum class spr_ids : unsigned {
-  map_begin = 0,
-  map_end = map_begin + 256 - 1,
-  soldier,
-  selection,
-
-  max,
-};
-static constexpr auto _(spr_ids e) { return static_cast<unsigned>(e); }
-
-static unsigned g_sel = -1;
+static int g_sel = -1;
 
 static void update_sprites(spr::system & spr) {
-  spr.mapmem(_(spr_ids::max), [](spr::inst * ptr) -> void {
+  spr.mapmem([](spr::inst * ptr) -> spr::inst * {
     for (auto i = 0; i < 256; i++) {
-      ptr[i] = {
+      *ptr++ = {
         .pos { i % 16, i / 16 },
         .uv = atlas::id_to_uv(map[i]),
       };
     }
-    ptr[_(spr_ids::soldier)] = {
+    *ptr++ = {
       .pos { 3, 1 },
       .uv = atlas::id_to_uv(_(uv_ids::soldier)),
     };
-    ptr[_(spr_ids::selection)] = {
+    *ptr++ = {
       .pos { g_sel % 16, g_sel / 16 },
       .uv = atlas::id_to_uv(_(uv_ids::selection)),
     };
+    return ptr;
   });
 }
 
 struct : vapp {
   void run() override {
+    casein::cursor_visible = false;
+    casein::interrupt(casein::IRQ_CURSOR);
+
     main_loop("yorg", [&](auto & dq) {
       spr::system spr { dq.physical_device(), dq.surface() };
       update_sprites(spr);
