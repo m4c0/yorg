@@ -8,7 +8,7 @@ import vee;
 import voo;
 
 namespace spr {
-  export constexpr const auto select_format = VK_FORMAT_R8G8B8A8_UNORM;
+  export constexpr const auto select_format = VK_FORMAT_R8G8B8A8_UINT;
 
   export struct inst {
     dotz::vec2 pos;
