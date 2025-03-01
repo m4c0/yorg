@@ -12,7 +12,7 @@ layout(location = 1) out vec4 select;
 void main() {
   colour = texture(terrain, f_uv);
 
-  uint ir = f_inst % 256;
-  uint ig = f_inst / 256;
-  select = vec4(ir, ig, 0, 256) / 256.0;
+  uint i1 = f_inst % 256;
+  uint i2 = f_inst / 256;
+  select = vec4(i1, i2, 0, 256) / 256.0;
 }

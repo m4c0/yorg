@@ -150,8 +150,8 @@ namespace spr {
 
     int pick() {
       voo::mapmem mm { m_pick.memory() };
-      auto * m = static_cast<unsigned char *>(*mm);
-      return m[3] ? static_cast<unsigned>(m[0]) : -1;
+      auto * m = static_cast<unsigned short *>(*mm);
+      return m[1] ? static_cast<unsigned>(m[0]) : -1;
     }
   };
 }
