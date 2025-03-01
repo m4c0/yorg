@@ -47,6 +47,7 @@ static void update_sprites(spr::system & spr) {
       *ptr++ = {
         .pos { i % 16, i / 16 },
         .uv = atlas::id_to_uv(map[i]),
+        .pickable = 1,
       };
     }
     *ptr++ = {

@@ -13,7 +13,16 @@ namespace spr {
   export struct inst {
     dotz::vec2 pos;
     dotz::vec2 uv;
+    float pickable;
+    float pad;
   };
+  static_assert(sizeof(inst) % 4 == 0);
+  
+  template<typename X>
+  static constexpr unsigned ofs(X (inst::*x)) {
+    void * ptr = &(reinterpret_cast<inst *>(0)->*x);
+    return reinterpret_cast<traits::size_t>(ptr);
+  }
 
   struct upc { float aspect; };
 
@@ -88,8 +97,9 @@ namespace spr {
         },
         .attributes {
           m_quad.vertex_attribute(0),
-          vee::vertex_attribute_vec2(1, 0),
-          vee::vertex_attribute_vec2(1, sizeof(dotz::vec2)),
+          vee::vertex_attribute_vec2(1, ofs(&inst::pos)),
+          vee::vertex_attribute_vec2(1, ofs(&inst::uv)),
+          vee::vertex_attribute_float(1, ofs(&inst::pickable)),
         },
       }) }
       , m_pick { pd, vee::create_transfer_dst_buffer(sizeof(unsigned)) }
