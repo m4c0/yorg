@@ -6,6 +6,7 @@ import cursor;
 import dotz;
 import hai;
 import jute;
+import pick;
 import silog;
 import spr;
 import vee;
@@ -87,6 +88,8 @@ struct : vapp {
 
       spr::system spr { dq.physical_device(), dq.surface(), sw };
       update_sprites(spr);
+
+      pick::system pick { dq.physical_device(), dq.surface(), sw };
 
       vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
       spr.update_atlas(atlas.image_view(), *smp);
