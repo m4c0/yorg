@@ -109,7 +109,10 @@ struct : vapp {
         sync.queue_submit(dq.queue(), cb.cb());
 
         // XXX: Should this be inside the present guard?
-        g_sel = mouse_in ? spr.pick() : -1;
+        if (mouse_in) {
+          auto n = spr.pick();
+          if (n >= 0) g_sel = n;
+        } else g_sel = -1;
         update_sprites(spr);
       });
       dq.queue()->device_wait_idle();
