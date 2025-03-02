@@ -60,7 +60,13 @@ namespace spr {
       , m_quad { pd }
       , m_rp { vee::create_render_pass(vee::create_render_pass_params {
         .attachments {{
-          vee::create_colour_attachment(pd, s),
+          vee::create_colour_attachment({
+            .format = vee::find_best_surface_image_format(pd, s),
+            .load_op = vee::attachment_load_op_clear,
+            .store_op = vee::attachment_store_op_store,
+            .initial_layout = vee::image_layout_undefined,
+            .final_layout = vee::image_layout_color_attachment_optimal,
+          }),
           vee::create_colour_attachment(select_format, vee::image_layout_transfer_src_optimal),
         }},
         .subpasses {{
