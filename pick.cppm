@@ -115,11 +115,7 @@ namespace pick {
       }
     }
 
-    void mapmem(traits::is_callable_r<inst *, inst *> auto fn) {
-      voo::mapmem mm { m_inst.memory() };
-      auto ptr = static_cast<inst *>(*mm);
-      m_count = fn(ptr) - ptr;
-    }
+    auto map() { return voo::memiter<inst> { m_inst.memory(), &m_count }; }
 
     void run(vee::command_buffer cb, const voo::swapchain & sw, int mx, int my) {
       cmd_render_pass(cb, sw, mx, my);

@@ -40,12 +40,10 @@ static constexpr auto _(uv_ids e) { return static_cast<unsigned char>(e); }
 static int g_sel = -1;
 
 static void update_picks(pick::system & pick) {
-  pick.mapmem([](pick::inst * ptr) -> pick::inst * {
-    for (auto i = 0; i < 256; i++) {
-      *ptr++ = { .pos { i % 16, i / 16 } };
-    }
-    return ptr;
-  });
+  auto pm = pick.map();
+  for (auto i = 0; i < 256; i++) {
+    pm += { .pos { i % 16, i / 16 } };
+  }
 }
 static void update_sprites(spr::system & spr) {
   auto sm = spr.map();
