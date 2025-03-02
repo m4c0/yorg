@@ -42,13 +42,20 @@ static constexpr auto _(uv_ids e) { return static_cast<unsigned char>(e); }
 
 static int g_sel = -1;
 
+static void update_picks(pick::system & pick) {
+  pick.mapmem([](pick::inst * ptr) -> pick::inst * {
+    for (auto i = 0; i < 256; i++) {
+      *ptr++ = { .pos { i % 16, i / 16 } };
+    }
+    return ptr;
+  });
+}
 static void update_sprites(spr::system & spr) {
   spr.mapmem([](spr::inst * ptr) -> spr::inst * {
     for (auto i = 0; i < 256; i++) {
       *ptr++ = {
         .pos { i % 16, i / 16 },
         .uv = atlas::id_to_uv(map[i]),
-        .pickable = 1,
       };
     }
     *ptr++ = {
@@ -90,6 +97,7 @@ struct : vapp {
       update_sprites(spr);
 
       pick::system pick { dq.physical_device(), dq.surface(), sw };
+      update_picks(pick);
 
       vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
       spr.update_atlas(atlas.image_view(), *smp);
@@ -106,14 +114,14 @@ struct : vapp {
         {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
           spr.cmd_render_pass(cb.cb(), sw);
-          if (mouse_in) spr.cmd_copy_to_buffer(cb.cb(), sw, mx, my);
+          if (mouse_in) pick.run(cb.cb(), sw, mx, my);
           cur.run(cb.cb(), sw);
         }
         sync.queue_submit(dq.queue(), cb.cb());
 
         // XXX: Should this be inside the present guard?
         if (mouse_in) {
-          auto n = spr.pick();
+          auto n = pick.pick();
           if (n >= 0) g_sel = n;
         } else g_sel = -1;
         update_sprites(spr);
