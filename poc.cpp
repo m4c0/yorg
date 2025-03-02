@@ -3,16 +3,12 @@
 import atlas;
 import casein;
 import cursor;
-import dotz;
-import hai;
 import jute;
 import pick;
-import silog;
 import spr;
 import vee;
 import voo;
 import vapp;
-import wagen;
 
 static constexpr const jute::view map {
  "................"
