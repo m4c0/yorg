@@ -36,6 +36,7 @@ static_assert(map.size() == 256);
 
 enum class uv_ids : unsigned char {
   soldier   = 1,
+  enemy,
   selection,
 };
 static constexpr auto _(uv_ids e) { return static_cast<unsigned char>(e); }
@@ -62,6 +63,10 @@ static void update_sprites(spr::system & spr) {
       .pos { 3, 1 },
       .uv = atlas::id_to_uv(_(uv_ids::soldier)),
     };
+    *ptr++ = {
+      .pos { 7, 4 },
+      .uv = atlas::id_to_uv(_(uv_ids::enemy)),
+    };
     if (g_sel == -1) return ptr;
 
     *ptr++ = {
@@ -84,6 +89,7 @@ struct : vapp {
         ptr['.'] = 0xFF770000;
 
         ptr[_(uv_ids::soldier)] = 0xFF000077;
+        ptr[_(uv_ids::enemy)] = 0xFF007777;
         ptr[_(uv_ids::selection)] = 0x77777777;
       });
 
