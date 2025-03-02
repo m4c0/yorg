@@ -29,6 +29,7 @@ namespace cursor {
               .format = vee::find_best_surface_image_format(dq->physical_device(), dq->surface()),
               .load_op = vee::attachment_load_op_load,
               .store_op = vee::attachment_store_op_store,
+              .initial_layout = vee::image_layout_color_attachment_optimal,
               .final_layout = vee::image_layout_present_src_khr,
             }),
           }},
