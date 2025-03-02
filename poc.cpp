@@ -48,29 +48,27 @@ static void update_picks(pick::system & pick) {
   });
 }
 static void update_sprites(spr::system & spr) {
-  spr.mapmem([](spr::inst * ptr) -> spr::inst * {
-    for (auto i = 0; i < 256; i++) {
-      *ptr++ = {
-        .pos { i % 16, i / 16 },
-        .uv = atlas::id_to_uv(map[i]),
-      };
-    }
-    *ptr++ = {
-      .pos { 3, 1 },
-      .uv = atlas::id_to_uv(_(uv_ids::soldier)),
+  auto sm = spr.map();
+  for (auto i = 0; i < 256; i++) {
+    sm += {
+      .pos { i % 16, i / 16 },
+      .uv = atlas::id_to_uv(map[i]),
     };
-    *ptr++ = {
-      .pos { 7, 4 },
-      .uv = atlas::id_to_uv(_(uv_ids::enemy)),
-    };
-    if (g_sel == -1) return ptr;
+  }
+  sm += {
+    .pos { 3, 1 },
+    .uv = atlas::id_to_uv(_(uv_ids::soldier)),
+  };
+  sm += {
+    .pos { 7, 4 },
+    .uv = atlas::id_to_uv(_(uv_ids::enemy)),
+  };
 
-    *ptr++ = {
+  if (g_sel >= 0)
+    sm += {
       .pos { g_sel % 16, g_sel / 16 },
       .uv = atlas::id_to_uv(_(uv_ids::selection)),
     };
-    return ptr;
-  });
 }
 
 struct : vapp {
