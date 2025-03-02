@@ -39,15 +39,12 @@ static constexpr auto _(uv_ids e) { return static_cast<unsigned char>(e); }
 
 static int g_sel = -1;
 
-static void update_picks(pick::system & pick) {
+static void update_sprites(spr::system & spr, pick::system & pick) {
   auto pm = pick.map();
+  auto sm = spr.map();
+
   for (auto i = 0; i < 256; i++) {
     pm += { .pos { i % 16, i / 16 } };
-  }
-}
-static void update_sprites(spr::system & spr) {
-  auto sm = spr.map();
-  for (auto i = 0; i < 256; i++) {
     sm += {
       .pos { i % 16, i / 16 },
       .uv = atlas::id_to_uv(map[i]),
@@ -92,10 +89,8 @@ struct : vapp {
       cursor::t cur { &dq, sw };
 
       spr::system spr { dq.physical_device(), dq.surface(), sw };
-      update_sprites(spr);
-
       pick::system pick { dq.physical_device(), dq.surface(), sw };
-      update_picks(pick);
+      update_sprites(spr, pick);
 
       vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
       spr.update_atlas(atlas.image_view(), *smp);
@@ -122,7 +117,7 @@ struct : vapp {
           auto n = pick.pick();
           if (n >= 0) g_sel = n;
         } else g_sel = -1;
-        update_sprites(spr);
+        update_sprites(spr, pick);
       });
       dq.queue()->device_wait_idle();
     });
