@@ -42,7 +42,7 @@ namespace pick {
         .clear_colours { vee::clear_colour(0, 0, 0, 0) },
       });
       vee::cmd_set_viewport(*scb, sw.extent());
-      vee::cmd_set_scissor(*scb, sw.extent());
+      vee::cmd_set_scissor(*scb, vee::rect { { mx, my }, { 1, 1 } });
       vee::cmd_push_vert_frag_constants(*scb, *m_pl, &pc);
       vee::cmd_bind_gr_pipeline(*scb, *m_ppl);
       vee::cmd_bind_vertex_buffers(*scb, 1, m_inst.buffer());
