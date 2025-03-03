@@ -43,27 +43,35 @@ static void update_sprites(spr::system & spr, pick::system & pick) {
   auto pm = pick.map();
   auto sm = spr.map();
 
-  for (auto i = 0; i < 256; i++) {
-    pm += { .pos { i % 16, i / 16 } };
+  const auto blit = [&](spr::inst i) { sm += i; };
+  const auto blit_pick = [&](spr::inst i) {
+    blit(i);
+
+    pm += { .pos = i.pos };
+    if (g_sel != pm.count() - 1) return;
+
     sm += {
+      .pos = i.pos,
+      .uv = atlas::id_to_uv(_(uv_ids::selection)),
+    };
+  };
+
+  for (auto i = 0; i < 256; i++) {
+    spr::inst ii {
       .pos { i % 16, i / 16 },
       .uv = atlas::id_to_uv(map[i]),
     };
+    if (map[i] == '.') blit_pick(ii);
+    else blit(ii);
   }
-  sm += {
+  blit_pick({
     .pos { 3, 1 },
     .uv = atlas::id_to_uv(_(uv_ids::soldier)),
-  };
-  sm += {
+  });
+  blit({
     .pos { 7, 4 },
     .uv = atlas::id_to_uv(_(uv_ids::enemy)),
-  };
-
-  if (g_sel >= 0)
-    sm += {
-      .pos { g_sel % 16, g_sel / 16 },
-      .uv = atlas::id_to_uv(_(uv_ids::selection)),
-    };
+  });
 }
 
 struct : vapp {
