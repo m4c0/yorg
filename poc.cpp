@@ -1,7 +1,6 @@
 #pragma leco app
 
 import atlas;
-import blit;
 import casein;
 import cursor;
 import jute;
@@ -34,31 +33,44 @@ static_assert(map.size() == 256);
 enum class uv_ids : unsigned char {
   soldier   = 1,
   enemy,
-  selection = blit::sel,
+  selection,
 };
 static constexpr auto _(uv_ids e) { return static_cast<unsigned char>(e); }
 
 static int g_sel = -1;
 
 static void update_sprites(spr::system & spr, pick::system & pick) {
-  blit::system b { spr, pick, g_sel };
+  auto pm = pick.map();
+  auto sm = spr.map();
+
+  const auto blit = [&](spr::inst i) { sm += i; };
+  const auto blit_pick = [&](spr::inst i) {
+    blit(i);
+
+    pm += { .pos = i.pos };
+    if (g_sel != pm.count() - 1) return;
+
+    sm += {
+      .pos = i.pos,
+      .uv = atlas::id_to_uv(_(uv_ids::selection)),
+    };
+  };
 
   for (auto i = 0; i < 256; i++) {
-    blit::inst ii {
+    spr::inst ii {
       .pos { i % 16, i / 16 },
-      .id = map[i],
+      .uv = atlas::id_to_uv(map[i]),
     };
-    if (map[i] != '.') b.blit(ii);
-    else if (b.pick(ii)) {};
+    if (map[i] == '.') blit_pick(ii);
+    else blit(ii);
   }
-  if (b.pick({
+  blit_pick({
     .pos { 3, 1 },
-    .id = _(uv_ids::soldier),
-  })) {
-  }
-  b.blit({
+    .uv = atlas::id_to_uv(_(uv_ids::soldier)),
+  });
+  blit({
     .pos { 7, 4 },
-    .id = _(uv_ids::enemy),
+    .uv = atlas::id_to_uv(_(uv_ids::enemy)),
   });
 }
 
