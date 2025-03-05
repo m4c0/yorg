@@ -7,6 +7,7 @@ import cursor;
 import dotz;
 import jute;
 import pick;
+import soldiers;
 import spr;
 import vee;
 import voo;
@@ -37,10 +38,6 @@ static void update_pick(pick::system & pick) {
 static void update_sprites(spr::system & spr) {
   auto sm = spr.map();
 
-  sm += {
-    .pos { 3, 1 },
-    .uv = atlas::id_to_uv(_(uv_ids::soldier)),
-  };
   sm += {
     .pos { 7, 4 },
     .uv = atlas::id_to_uv(_(uv_ids::enemy)),
@@ -81,6 +78,7 @@ struct init : vapp {
       cursor::t cur { &dq, sw };
 
       battlemap::system map { dq, sw };
+      soldiers::system sld { dq, sw };
       spr::system spr { dq.physical_device(), sw, {
         .format = dq.find_best_surface_image_format(),
         .load_op = vee::attachment_load_op_load,
@@ -107,6 +105,7 @@ struct init : vapp {
         {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
           map.cmd_render_pass(cb.cb(), sw);
+          sld.cmd_render_pass(cb.cb(), sw);
           spr.cmd_render_pass(cb.cb(), sw);
           if (mouse_in) pick.run(cb.cb(), sw, mx, my);
           cur.run(cb.cb(), sw);
