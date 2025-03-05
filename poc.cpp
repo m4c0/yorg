@@ -3,6 +3,7 @@
 import atlas;
 import casein;
 import cursor;
+import dotz;
 import jute;
 import pick;
 import spr;
@@ -38,40 +39,42 @@ enum class uv_ids : unsigned char {
 static constexpr auto _(uv_ids e) { return static_cast<unsigned char>(e); }
 
 static int g_sel = -1;
+static dotz::vec2 g_sel_pos;
 
-static void update_sprites(spr::system & spr, pick::system & pick) {
+static void update_pick(pick::system & pick) {
   auto pm = pick.map();
-  auto sm = spr.map();
 
-  const auto blit = [&](spr::inst i) { sm += i; };
-  const auto blit_pick = [&](spr::inst i) {
-    blit(i);
-
-    pm += { .pos = i.pos };
-    if (g_sel != pm.count() - 1) return;
-
-    sm += {
-      .pos = i.pos,
-      .uv = atlas::id_to_uv(_(uv_ids::selection)),
-    };
-  };
+  g_sel_pos = g_sel == -1 ? dotz::vec2 { 10000, 10000 } : pm[g_sel].pos;
 
   for (auto i = 0; i < 256; i++) {
-    spr::inst ii {
+    if (map[i] != '.') continue;
+    pm += { .pos { i % 16, i / 16 } };
+  }
+  pm += { .pos { 3, 1 } };
+}
+
+static void update_sprites(spr::system & spr) {
+  auto sm = spr.map();
+
+  for (auto i = 0; i < 256; i++) {
+    sm += {
       .pos { i % 16, i / 16 },
       .uv = atlas::id_to_uv(map[i]),
     };
-    if (map[i] == '.') blit_pick(ii);
-    else blit(ii);
   }
-  blit_pick({
+  sm += {
     .pos { 3, 1 },
     .uv = atlas::id_to_uv(_(uv_ids::soldier)),
-  });
-  blit({
+  };
+  sm += {
     .pos { 7, 4 },
     .uv = atlas::id_to_uv(_(uv_ids::enemy)),
-  });
+  };
+
+  sm += {
+    .pos = g_sel_pos,
+    .uv = atlas::id_to_uv(_(uv_ids::selection)),
+  };
 }
 
 struct init : vapp {
@@ -107,7 +110,8 @@ struct init : vapp {
 
       spr::system spr { dq.physical_device(), dq.surface(), sw };
       pick::system pick { dq.physical_device(), dq.surface(), sw };
-      update_sprites(spr, pick);
+      update_pick(pick);
+      update_sprites(spr);
 
       vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
       spr.update_atlas(atlas.image_view(), *smp);
@@ -131,7 +135,8 @@ struct init : vapp {
 
         // XXX: Should this be inside the present guard?
         g_sel = mouse_in ? pick.pick() : -1;
-        update_sprites(spr, pick);
+        update_pick(pick);
+        update_sprites(spr);
       });
       dq.queue()->device_wait_idle();
     });
