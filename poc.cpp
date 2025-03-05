@@ -1,6 +1,7 @@
 #pragma leco app
 
 import atlas;
+import battlemap;
 import casein;
 import cursor;
 import dotz;
@@ -10,26 +11,6 @@ import spr;
 import vee;
 import voo;
 import vapp;
-
-static constexpr const jute::view map {
- "................"
- "................"
- "....XXX........."
- "..XXXXX........."
- "..XXX..........."
- "...XXXX........."
- "....X..........."
- "................"
- "................"
- "................"
- "................"
- "................"
- "................"
- "................"
- "................"
- "................"
-};
-static_assert(map.size() == 256);
 
 enum class uv_ids : unsigned char {
   soldier   = 1,
@@ -47,7 +28,7 @@ static void update_pick(pick::system & pick) {
   g_sel_pos = g_sel == -1 ? dotz::vec2 { 10000, 10000 } : pm[g_sel].pos;
 
   for (auto i = 0; i < 256; i++) {
-    if (map[i] != '.') continue;
+    //if (map[i] != '.') continue;
     pm += { .pos { i % 16, i / 16 } };
   }
   pm += { .pos { 3, 1 } };
@@ -56,12 +37,6 @@ static void update_pick(pick::system & pick) {
 static void update_sprites(spr::system & spr) {
   auto sm = spr.map();
 
-  for (auto i = 0; i < 256; i++) {
-    sm += {
-      .pos { i % 16, i / 16 },
-      .uv = atlas::id_to_uv(map[i]),
-    };
-  }
   sm += {
     .pos { 3, 1 },
     .uv = atlas::id_to_uv(_(uv_ids::soldier)),
@@ -94,9 +69,6 @@ struct init : vapp {
     main_loop("yorg", [&](auto & dq) {
       atlas::t atlas { dq.physical_device(), dq.queue_family() };
       atlas.mapmem(dq.queue(), [](auto * ptr) {
-        ptr['X'] = 0xFF007700;
-        ptr['.'] = 0xFF770000;
-
         ptr[_(uv_ids::soldier)] = 0xFF000077;
         ptr[_(uv_ids::enemy)] = 0xFF007777;
         ptr[_(uv_ids::selection)] = 0x77777777;
@@ -108,7 +80,14 @@ struct init : vapp {
 
       cursor::t cur { &dq, sw };
 
-      spr::system spr { dq.physical_device(), dq.surface(), sw };
+      battlemap::system map { dq, sw };
+      spr::system spr { dq.physical_device(), sw, {
+        .format = dq.find_best_surface_image_format(),
+        .load_op = vee::attachment_load_op_load,
+        .store_op = vee::attachment_store_op_store,
+        .initial_layout = vee::image_layout_color_attachment_optimal,
+        .final_layout = vee::image_layout_color_attachment_optimal,
+      }};
       pick::system pick { dq.physical_device(), dq.surface(), sw };
       update_pick(pick);
       update_sprites(spr);
@@ -127,6 +106,7 @@ struct init : vapp {
         voo::present_guard pg { dq.queue(), &sw, &sync };
         {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
+          map.cmd_render_pass(cb.cb(), sw);
           spr.cmd_render_pass(cb.cb(), sw);
           if (mouse_in) pick.run(cb.cb(), sw, mx, my);
           cur.run(cb.cb(), sw);
