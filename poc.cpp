@@ -8,6 +8,7 @@ import dotz;
 import enemies;
 import jute;
 import pick;
+import selection;
 import soldiers;
 import spr;
 import vee;
@@ -32,15 +33,6 @@ static void update_pick(pick::system & pick) {
     pm += { .pos { i % 16, i / 16 } };
   }
   pm += { .pos { 3, 1 } };
-}
-
-static void update_sprites(spr::system & spr) {
-  auto sm = spr.map();
-
-  sm += {
-    .pos = g_sel_pos,
-    .uv = atlas::id_to_uv(_(uv_ids::selection)),
-  };
 }
 
 struct init : vapp {
@@ -72,19 +64,9 @@ struct init : vapp {
       battlemap::system map { dq, sw };
       soldiers::system sld { dq, sw };
       enemies::system ene { dq, sw };
-      spr::system spr { dq.physical_device(), sw, {
-        .format = dq.find_best_surface_image_format(),
-        .load_op = vee::attachment_load_op_load,
-        .store_op = vee::attachment_store_op_store,
-        .initial_layout = vee::image_layout_color_attachment_optimal,
-        .final_layout = vee::image_layout_color_attachment_optimal,
-      }};
+      selection::system sel { dq, sw };
       pick::system pick { dq.physical_device(), dq.surface(), sw };
       update_pick(pick);
-      update_sprites(spr);
-
-      vee::sampler smp = vee::create_sampler(vee::nearest_sampler);
-      spr.update_atlas(atlas.image_view(), *smp);
 
       extent_loop([&] {
         auto mouse = casein::mouse_pos;
@@ -100,7 +82,7 @@ struct init : vapp {
           map.cmd_render_pass(cb.cb(), sw);
           sld.cmd_render_pass(cb.cb(), sw);
           ene.cmd_render_pass(cb.cb(), sw);
-          spr.cmd_render_pass(cb.cb(), sw);
+          sel.cmd_render_pass(cb.cb(), sw);
           if (mouse_in) pick.run(cb.cb(), sw, mx, my);
           cur.run(cb.cb(), sw);
         }
@@ -109,7 +91,7 @@ struct init : vapp {
         // XXX: Should this be inside the present guard?
         g_sel = mouse_in ? pick.pick() : -1;
         update_pick(pick);
-        update_sprites(spr);
+        sel.set(g_sel_pos);
       });
       dq.queue()->device_wait_idle();
     });
