@@ -5,6 +5,7 @@ import battlemap;
 import casein;
 import cursor;
 import dotz;
+import enemies;
 import jute;
 import pick;
 import soldiers;
@@ -14,8 +15,6 @@ import voo;
 import vapp;
 
 enum class uv_ids : unsigned char {
-  soldier   = 1,
-  enemy,
   selection,
 };
 static constexpr auto _(uv_ids e) { return static_cast<unsigned char>(e); }
@@ -37,11 +36,6 @@ static void update_pick(pick::system & pick) {
 
 static void update_sprites(spr::system & spr) {
   auto sm = spr.map();
-
-  sm += {
-    .pos { 7, 4 },
-    .uv = atlas::id_to_uv(_(uv_ids::enemy)),
-  };
 
   sm += {
     .pos = g_sel_pos,
@@ -66,8 +60,6 @@ struct init : vapp {
     main_loop("yorg", [&](auto & dq) {
       atlas::t atlas { dq.physical_device(), dq.queue_family() };
       atlas.mapmem(dq.queue(), [](auto * ptr) {
-        ptr[_(uv_ids::soldier)] = 0xFF000077;
-        ptr[_(uv_ids::enemy)] = 0xFF007777;
         ptr[_(uv_ids::selection)] = 0x77777777;
       });
 
@@ -79,6 +71,7 @@ struct init : vapp {
 
       battlemap::system map { dq, sw };
       soldiers::system sld { dq, sw };
+      enemies::system ene { dq, sw };
       spr::system spr { dq.physical_device(), sw, {
         .format = dq.find_best_surface_image_format(),
         .load_op = vee::attachment_load_op_load,
@@ -106,6 +99,7 @@ struct init : vapp {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
           map.cmd_render_pass(cb.cb(), sw);
           sld.cmd_render_pass(cb.cb(), sw);
+          ene.cmd_render_pass(cb.cb(), sw);
           spr.cmd_render_pass(cb.cb(), sw);
           if (mouse_in) pick.run(cb.cb(), sw, mx, my);
           cur.run(cb.cb(), sw);
