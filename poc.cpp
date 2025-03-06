@@ -71,7 +71,7 @@ struct init : vapp {
           sld.cmd_render_pass(cb.cb(), sw);
           ene.cmd_render_pass(cb.cb(), sw);
           sel.cmd_render_pass(cb.cb(), sw);
-          if (mouse_in) pick.run(cb.cb(), sw, mx, my);
+          if (mouse_in) pick.run(cb.cb(), mx, my);
           cur.run(cb.cb(), sw);
         }
         sync.queue_submit(dq.queue(), cb.cb());

@@ -15,6 +15,30 @@ namespace pick {
 
   struct upc { float aspect; };
 
+  export class offscreen {
+    hai::array<voo::offscreen::colour_buffer> m_sel;
+    const voo::swapchain * m_sw;
+
+  public:
+    explicit offscreen(vee::physical_device pd, const voo::swapchain * sw)
+      : m_sel { sw->count() }
+      , m_sw { sw }
+    {
+      for (auto i = 0; i < m_sel.size(); i++) {
+        m_sel[i] = {
+          pd, sw->extent(), pick::select_format,
+          vee::image_usage_colour_attachment,
+          vee::image_usage_transfer_src
+        };
+      }
+    }
+    [[nodiscard]] constexpr auto aspect() const { return m_sw->aspect(); }
+    [[nodiscard]] constexpr auto image() const { return m_sel[m_sw->index()].image(); }
+    [[nodiscard]] constexpr auto image_view(unsigned idx) const { return m_sel[idx].image_view(); }
+    [[nodiscard]] constexpr auto extent() const { return m_sw->extent(); }
+    [[nodiscard]] constexpr auto index() const { return m_sw->index(); }
+  };
+
   export class system {
     static constexpr const auto max_inst_count = 1024;
 
@@ -28,28 +52,28 @@ namespace pick {
     voo::host_buffer m_pick;
 
     hai::array<vee::framebuffer> m_fbs;
-    hai::array<voo::offscreen::colour_buffer> m_sel;
+    offscreen m_ofs;
 
     unsigned m_count {};
 
-    void cmd_render_pass(vee::command_buffer cb, const voo::swapchain & sw, int mx, int my) {
-      upc pc { sw.aspect() };
+    void cmd_render_pass(vee::command_buffer cb, int mx, int my) {
+      upc pc { m_ofs.aspect() };
       auto scb = voo::cmd_render_pass({
         .command_buffer = cb,
         .render_pass = *m_rp,
-        .framebuffer = *m_fbs[sw.index()],
-        .extent = sw.extent(),
+        .framebuffer = *m_fbs[m_ofs.index()],
+        .extent = m_ofs.extent(),
         .clear_colours { vee::clear_colour(0, 0, 0, 0) },
       });
-      vee::cmd_set_viewport(*scb, sw.extent());
+      vee::cmd_set_viewport(*scb, m_ofs.extent());
       vee::cmd_set_scissor(*scb, vee::rect { { mx, my }, { 1, 1 } });
       vee::cmd_push_vert_frag_constants(*scb, *m_pl, &pc);
       vee::cmd_bind_gr_pipeline(*scb, *m_ppl);
       vee::cmd_bind_vertex_buffers(*scb, 1, m_inst.buffer());
       m_quad.run(*scb, 0, m_count);
     }
-    void cmd_copy_image_to_buffer(vee::command_buffer cb, const voo::swapchain & sw, int mx, int my) {
-      vee::cmd_copy_image_to_buffer(cb, { mx, my }, { 1, 1 }, m_sel[sw.index()].image(), m_pick.buffer());
+    void cmd_copy_image_to_buffer(vee::command_buffer cb, int mx, int my) {
+      vee::cmd_copy_image_to_buffer(cb, { mx, my }, { 1, 1 }, m_ofs.image(), m_pick.buffer());
     }
 
   public:
@@ -98,18 +122,12 @@ namespace pick {
       }) }
       , m_pick { pd, vee::create_transfer_dst_buffer(sizeof(unsigned)) }
       , m_fbs { sw.count() }
-      , m_sel { sw.count() }
+      , m_ofs { pd, &sw }
     {
       for (auto i = 0; i < m_fbs.size(); i++) {
-        m_sel[i] = {
-          pd, sw.extent(), pick::select_format,
-          vee::image_usage_colour_attachment,
-          vee::image_usage_transfer_src
-        };
-
         m_fbs[i] = vee::create_framebuffer({
           .render_pass = *m_rp,
-          .attachments {{ m_sel[i].image_view() }},
+          .attachments {{ m_ofs.image_view(i) }},
           .extent = sw.extent(),
         });
       }
@@ -117,9 +135,9 @@ namespace pick {
 
     auto map() { return voo::memiter<inst> { m_inst.memory(), &m_count }; }
 
-    void run(vee::command_buffer cb, const voo::swapchain & sw, int mx, int my) {
-      cmd_render_pass(cb, sw, mx, my);
-      cmd_copy_image_to_buffer(cb, sw, mx, my);
+    void run(vee::command_buffer cb, int mx, int my) {
+      cmd_render_pass(cb, mx, my);
+      cmd_copy_image_to_buffer(cb, mx, my);
     }
 
     int pick() {
