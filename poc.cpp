@@ -49,11 +49,13 @@ struct init : vapp {
 
       cursor::t cur { &dq, sw };
 
+      pick::offscreen ofs { dq.physical_device(), &sw };
+
       battlemap::system map { dq, sw };
       soldiers::system sld { dq, sw };
       enemies::system ene { dq, sw };
       selection::system sel { dq, sw };
-      pick::system pick { dq.physical_device(), dq.surface(), sw };
+      pick::system pick { dq.physical_device(), dq.surface(), ofs };
       update_pick(pick);
 
       extent_loop([&] {
@@ -71,7 +73,7 @@ struct init : vapp {
           sld.cmd_render_pass(cb.cb(), sw);
           ene.cmd_render_pass(cb.cb(), sw);
           sel.cmd_render_pass(cb.cb(), sw);
-          if (mouse_in) pick.run(cb.cb(), mx, my);
+          if (mouse_in) pick.run(cb.cb(), ofs, mx, my);
           cur.run(cb.cb(), sw);
         }
         sync.queue_submit(dq.queue(), cb.cb());
