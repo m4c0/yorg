@@ -1,12 +1,10 @@
 #pragma leco app
 
-import atlas;
 import battlemap;
 import casein;
 import cursor;
 import dotz;
 import enemies;
-import jute;
 import pick;
 import selection;
 import soldiers;
@@ -14,11 +12,6 @@ import spr;
 import vee;
 import voo;
 import vapp;
-
-enum class uv_ids : unsigned char {
-  selection,
-};
-static constexpr auto _(uv_ids e) { return static_cast<unsigned char>(e); }
 
 static int g_sel = -1;
 static dotz::vec2 g_sel_pos;
@@ -50,11 +43,6 @@ struct init : vapp {
   }
   void run() override {
     main_loop("yorg", [&](auto & dq) {
-      atlas::t atlas { dq.physical_device(), dq.queue_family() };
-      atlas.mapmem(dq.queue(), [](auto * ptr) {
-        ptr[_(uv_ids::selection)] = 0x77777777;
-      });
-
       voo::single_cb cb { dq.queue_family() };
       voo::frame_sync_stuff sync {};
       voo::swapchain sw { dq };
