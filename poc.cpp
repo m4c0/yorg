@@ -55,7 +55,7 @@ struct init : vapp {
       soldiers::system sld { dq, sw };
       enemies::system ene { dq, sw };
       selection::system sel { dq, sw };
-      pick::system pick { dq.physical_device(), dq.surface(), ofs };
+      pick::system pick { dq, ofs };
       update_pick(pick);
 
       extent_loop([&] {
