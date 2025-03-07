@@ -45,12 +45,14 @@ namespace battlemap {
 
     void load_sprites() {
       auto sm = m_spr.map();
+      auto pm = m_pick.map();
 
       for (auto i = 0; i < 256; i++) {
         sm += {
           .pos { i % 16, i / 16 },
           .uv = atlas::id_to_uv(map[i]),
         };
+        if (map[i] == '.') pm += { .pos { i % 16, i / 16 } };
       }
     }
 
@@ -71,6 +73,9 @@ namespace battlemap {
 
     void cmd_render_pass(vee::command_buffer cb, const voo::swapchain & sw) {
       m_spr.cmd_render_pass(cb, sw);
+    }
+    void run_pick(vee::command_buffer cb, const pick::offscreen & ofs, int mx, int my) {
+      m_pick.run(cb, ofs, mx, my);
     }
   };
 }
