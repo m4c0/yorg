@@ -51,9 +51,9 @@ struct init : vapp {
 
       pick::offscreen ofs { dq.physical_device(), &sw };
 
-      battlemap::system map { dq, sw };
-      soldiers::system sld { dq, sw };
-      enemies::system ene { dq, sw };
+      battlemap::system map { dq, sw, ofs };
+      soldiers::system sld { dq, sw, ofs };
+      enemies::system ene { dq, sw, ofs };
       selection::system sel { dq, sw };
       pick::system pick { dq, ofs };
       update_pick(pick);

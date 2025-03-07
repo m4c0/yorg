@@ -1,6 +1,7 @@
 export module battlemap;
 import atlas;
 import jute;
+import pick;
 import spr;
 import vee;
 import voo;
@@ -39,6 +40,7 @@ namespace battlemap {
   export class system {
     vee::sampler m_smp = vee::create_sampler(vee::nearest_sampler);
     spr::system m_spr;
+    pick::system m_pick;
     atlas::t m_atlas;
 
     void load_sprites() {
@@ -53,8 +55,9 @@ namespace battlemap {
     }
 
   public:
-    system(voo::device_and_queue & dq, const voo::swapchain & sw)
+    system(voo::device_and_queue & dq, const voo::swapchain & sw, const pick::offscreen & ofs)
       : m_spr { dq.physical_device(), sw, att(dq) }
+      , m_pick { dq, ofs }
       , m_atlas { dq.physical_device(), dq.queue_family() }
     {
       m_atlas.mapmem(dq.queue(), [](auto * ptr) {
