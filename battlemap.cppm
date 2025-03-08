@@ -1,5 +1,6 @@
 export module battlemap;
 import atlas;
+import dotz;
 import jute;
 import pick;
 import spr;
@@ -54,7 +55,7 @@ namespace battlemap {
         };
         if (map[i] == '.') pm += {
           .pos { i % 16, i / 16 },
-          .id = i,
+          .id = i + 1,
         };
       }
     }
@@ -79,6 +80,11 @@ namespace battlemap {
     }
     void run_pick(vee::command_buffer cb, const pick::offscreen & ofs, int mx, int my) {
       m_pick.run(cb, ofs, mx, my);
+    }
+    dotz::vec2 pick() {
+      auto p = m_pick.pick();
+      if (p == 0) return -1;
+      return { (p - 1) % 16, (p - 1) / 16 };
     }
   };
 }
