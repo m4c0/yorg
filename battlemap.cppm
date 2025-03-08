@@ -47,12 +47,15 @@ namespace battlemap {
       auto sm = m_spr.map();
       auto pm = m_pick.map();
 
-      for (auto i = 0; i < 256; i++) {
+      for (auto i = 0U; i < 256; i++) {
         sm += {
           .pos { i % 16, i / 16 },
           .uv = atlas::id_to_uv(map[i]),
         };
-        if (map[i] == '.') pm += { .pos { i % 16, i / 16 } };
+        if (map[i] == '.') pm += {
+          .pos { i % 16, i / 16 },
+          .id = i,
+        };
       }
     }
 

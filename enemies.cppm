@@ -30,7 +30,10 @@ namespace enemies {
         .pos { 7, 4 },
         .uv = atlas::id_to_uv(1),
       };
-      pm += { .pos { 7, 4 } };
+      pm += {
+        .pos { 7, 4 },
+        .id = 1,
+      };
     }
 
   public:
