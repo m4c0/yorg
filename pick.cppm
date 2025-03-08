@@ -146,8 +146,7 @@ namespace pick {
 
     int pick() {
       voo::mapmem mm { m_pick.memory() };
-      auto * m = static_cast<unsigned *>(*mm);
-      return m[0] ? m[0] : -1;
+      return *static_cast<unsigned *>(*mm);
     }
   };
 }
