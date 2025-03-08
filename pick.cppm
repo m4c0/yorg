@@ -8,10 +8,14 @@ import vee;
 import voo;
 
 namespace pick {
-  export constexpr const auto select_format = VK_FORMAT_R8G8B8A8_UINT;
+  export constexpr const auto select_format = VK_FORMAT_R32_UINT;
 
-  export struct inst { dotz::vec2 pos; };
-  static_assert(sizeof(inst) % 4 == 0);
+  export struct inst {
+    dotz::vec2 pos;
+    unsigned id;
+    float pad;
+  };
+  static_assert(sizeof(inst) % 16 == 0);
 
   struct upc { float aspect; };
 
@@ -118,6 +122,7 @@ namespace pick {
         .attributes {
           m_quad.vertex_attribute(0),
           vee::vertex_attribute_vec2(1, traits::offset_of(&inst::pos)),
+          vee::vertex_attribute_uint(1, traits::offset_of(&inst::id)),
         },
       }) }
       , m_pick { dq.physical_device(), vee::create_transfer_dst_buffer(sizeof(unsigned)) }
@@ -141,8 +146,8 @@ namespace pick {
 
     int pick() {
       voo::mapmem mm { m_pick.memory() };
-      auto * m = static_cast<unsigned short *>(*mm);
-      return m[1] ? static_cast<unsigned>(m[0]) : -1;
+      auto * m = static_cast<unsigned *>(*mm);
+      return m[0] ? m[0] : -1;
     }
   };
 }
