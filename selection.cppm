@@ -23,6 +23,7 @@ namespace selection {
 
     void load_sprites(dotz::vec2 pos) {
       auto sm = m_spr.map();
+      if (pos.x < 0) return;
       sm += {
         .pos = pos,
         .uv = atlas::id_to_uv(1),
