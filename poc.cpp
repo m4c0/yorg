@@ -1,22 +1,13 @@
 #pragma leco app
 
-import battlemap;
+import battle;
 import casein;
 import cursor;
 import dotz;
-import enemies;
 import pick;
 import selection;
-import soldiers;
-import spr;
-import vee;
 import voo;
 import vapp;
-
-enum class battlestate {
-  pick_soldier,
-  pick_target,
-} g_state;
 
 struct init : vapp {
   init() {
@@ -38,11 +29,8 @@ struct init : vapp {
       voo::swapchain sw { dq };
 
       pick::offscreen ofs { dq, sw };
+      battle::system btl { dq, sw, ofs };
       cursor::t cur { &dq, sw };
-
-      battlemap::system map { dq, sw, ofs };
-      soldiers::system sld { dq, sw, ofs };
-      enemies::system ene { dq, sw, ofs };
       selection::system sel { dq, sw };
 
       extent_loop([&] {
@@ -56,39 +44,15 @@ struct init : vapp {
         voo::present_guard pg { dq.queue(), &sw, &sync };
         {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
-          map.cmd_render_pass(cb.cb(), sw);
-          sld.cmd_render_pass(cb.cb(), sw);
-          ene.cmd_render_pass(cb.cb(), sw);
+          btl.cmd_render_pass(cb.cb(), sw);
+          if (mouse_in) btl.run_pick(cb.cb(), ofs, mx, my);
           sel.cmd_render_pass(cb.cb(), sw);
-          if (mouse_in)
-            switch (g_state) {
-            case battlestate::pick_soldier:
-              sld.run_pick(cb.cb(), ofs, mx, my);
-              break;
-            case battlestate::pick_target:
-              sld.run_pick(cb.cb(), ofs, mx, my);
-              ene.run_pick(cb.cb(), ofs, mx, my);
-              break;
-            };
           cur.run(cb.cb(), sw);
         }
         sync.queue_submit(dq.queue(), cb.cb());
 
         // XXX: Should this be inside the present guard?
-        if (!mouse_in) {
-          sel.set(-1);
-        } else {
-          switch (g_state) {
-            case battlestate::pick_soldier:
-              sel.set(sld.pick());
-              break;
-            case battlestate::pick_target: {
-              auto p = map.pick();
-              sel.set(p.x < 0 ? ene.pick() : p);
-              break;
-            }
-          }
-        }
+        sel.set(mouse_in ? btl.pick() : -1);
       });
       dq.queue()->device_wait_idle();
     });
