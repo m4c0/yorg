@@ -4,7 +4,6 @@ export module pick;
 import dotz;
 import hai;
 import traits;
-import vee;
 import voo;
 
 namespace pick {
@@ -24,13 +23,13 @@ namespace pick {
     const voo::swapchain * m_sw;
 
   public:
-    explicit offscreen(vee::physical_device pd, const voo::swapchain * sw)
-      : m_sel { sw->count() }
-      , m_sw { sw }
+    explicit offscreen(voo::device_and_queue & dq, const voo::swapchain & sw)
+      : m_sel { sw.count() }
+      , m_sw { &sw }
     {
       for (auto i = 0; i < m_sel.size(); i++) {
         m_sel[i] = {
-          pd, sw->extent(), pick::select_format,
+          dq.physical_device(), sw.extent(), pick::select_format,
           vee::image_usage_colour_attachment,
           vee::image_usage_transfer_src
         };

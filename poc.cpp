@@ -37,9 +37,8 @@ struct init : vapp {
       voo::frame_sync_stuff sync {};
       voo::swapchain sw { dq };
 
+      pick::offscreen ofs { dq, sw };
       cursor::t cur { &dq, sw };
-
-      pick::offscreen ofs { dq.physical_device(), &sw };
 
       battlemap::system map { dq, sw, ofs };
       soldiers::system sld { dq, sw, ofs };
