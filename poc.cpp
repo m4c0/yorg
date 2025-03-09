@@ -13,6 +13,11 @@ import vee;
 import voo;
 import vapp;
 
+enum class battlestate {
+  pick_soldier,
+  pick_target,
+} g_state;
+
 struct init : vapp {
   init() {
     using namespace casein;
@@ -56,13 +61,35 @@ struct init : vapp {
           sld.cmd_render_pass(cb.cb(), sw);
           ene.cmd_render_pass(cb.cb(), sw);
           sel.cmd_render_pass(cb.cb(), sw);
-          if (mouse_in) sld.run_pick(cb.cb(), ofs, mx, my);
+          if (mouse_in)
+            switch (g_state) {
+            case battlestate::pick_soldier:
+              sld.run_pick(cb.cb(), ofs, mx, my);
+              break;
+            case battlestate::pick_target:
+              sld.run_pick(cb.cb(), ofs, mx, my);
+              ene.run_pick(cb.cb(), ofs, mx, my);
+              break;
+            };
           cur.run(cb.cb(), sw);
         }
         sync.queue_submit(dq.queue(), cb.cb());
 
         // XXX: Should this be inside the present guard?
-        sel.set(mouse_in ? sld.pick() : -1);
+        if (!mouse_in) {
+          sel.set(-1);
+        } else {
+          switch (g_state) {
+            case battlestate::pick_soldier:
+              sel.set(sld.pick());
+              break;
+            case battlestate::pick_target: {
+              auto p = map.pick();
+              sel.set(p.x < 0 ? ene.pick() : p);
+              break;
+            }
+          }
+        }
       });
       dq.queue()->device_wait_idle();
     });
