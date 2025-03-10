@@ -29,16 +29,6 @@ namespace battlemap {
   };
   static_assert(map.size() == 256);
 
-  static auto att(voo::device_and_queue * dq) {
-    return vee::attachment_description {
-      .format = dq->find_best_surface_image_format(),
-      .load_op = vee::attachment_load_op_load,
-      .store_op = vee::attachment_store_op_store,
-      .initial_layout = vee::image_layout_color_attachment_optimal,
-      .final_layout = vee::image_layout_color_attachment_optimal,
-    };
-  }
-
   export class system {
     vee::sampler m_smp = vee::create_sampler(vee::nearest_sampler);
     spr::system m_spr;
@@ -63,7 +53,7 @@ namespace battlemap {
 
   public:
     system(render::system * rnd)
-      : m_spr { rnd, att(rnd->dq) }
+      : m_spr { rnd }
       , m_pick { rnd->dq, rnd->ofs }
       , m_atlas { rnd }
     {

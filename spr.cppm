@@ -9,6 +9,16 @@ import vee;
 import voo;
 
 namespace spr {
+  static auto att(voo::device_and_queue * dq) {
+    return vee::attachment_description {
+      .format = dq->find_best_surface_image_format(),
+      .load_op = vee::attachment_load_op_load,
+      .store_op = vee::attachment_store_op_store,
+      .initial_layout = vee::image_layout_color_attachment_optimal,
+      .final_layout = vee::image_layout_color_attachment_optimal,
+    };
+  }
+
   export struct inst {
     dotz::vec2 pos;
     dotz::vec2 uv;
@@ -37,7 +47,7 @@ namespace spr {
     unsigned m_count {};
 
   public:
-    system(render::system * rnd, const vee::attachment_description & ad)
+    system(render::system * rnd)
       : m_inst {
         rnd->dq->physical_device(),
         vee::create_buffer(
@@ -48,7 +58,7 @@ namespace spr {
       , m_quad { rnd->dq->physical_device() }
       , m_rp { vee::create_render_pass(vee::create_render_pass_params {
         .attachments {{
-          vee::create_colour_attachment(ad),
+          vee::create_colour_attachment(att(rnd->dq)),
         }},
         .subpasses {{
           vee::create_subpass({
