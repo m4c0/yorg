@@ -45,12 +45,12 @@ namespace clearpass {
       }
     }
 
-    void cmd_render_pass(vee::command_buffer cb, const voo::swapchain & sw) {
+    void cmd_render_pass(render::system * rnd) {
       voo::cmd_render_pass({
-        .command_buffer = cb,
+        .command_buffer = rnd->cb.cb(),
         .render_pass = *m_rp,
-        .framebuffer = *m_fbs[sw.index()],
-        .extent = sw.extent(),
+        .framebuffer = *m_fbs[rnd->sw.index()],
+        .extent = rnd->sw.extent(),
         .clear_colours { vee::clear_colour(0, 0, 0, 0) },
       });
     }

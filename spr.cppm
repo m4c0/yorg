@@ -111,17 +111,17 @@ namespace spr {
       vee::update_descriptor_set(m_ds.descriptor_set(), 0, iv, smp);
     }
 
-    void cmd_render_pass(vee::command_buffer cb, const voo::swapchain & sw) {
-      upc pc { sw.aspect() };
+    void cmd_render_pass(render::system * rnd) {
+      upc pc { rnd->sw.aspect() };
       auto scb = voo::cmd_render_pass({
-        .command_buffer = cb,
+        .command_buffer = rnd->cb.cb(),
         .render_pass = *m_rp,
-        .framebuffer = *m_fbs[sw.index()],
-        .extent = sw.extent(),
+        .framebuffer = *m_fbs[rnd->sw.index()],
+        .extent = rnd->sw.extent(),
         .clear_colours { vee::clear_colour(0, 0, 0, 0) },
       });
-      vee::cmd_set_viewport(*scb, sw.extent());
-      vee::cmd_set_scissor(*scb, sw.extent());
+      vee::cmd_set_viewport(*scb, rnd->sw.extent());
+      vee::cmd_set_scissor(*scb, rnd->sw.extent());
       vee::cmd_push_vert_frag_constants(*scb, *m_pl, &pc);
       vee::cmd_bind_descriptor_set(*scb, *m_pl, 0, m_ds.descriptor_set());
       vee::cmd_bind_gr_pipeline(*scb, *m_ppl);

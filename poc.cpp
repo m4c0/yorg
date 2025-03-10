@@ -25,7 +25,6 @@ struct init : vapp {
   }
   void run() override {
     main_loop("yorg", [&](auto & dq) {
-      voo::single_cb cb { dq.queue_family() };
       voo::frame_sync_stuff sync {};
       render::system rnd { &dq };
 
@@ -44,14 +43,15 @@ struct init : vapp {
 
         voo::present_guard pg { dq.queue(), &rnd.sw, &sync };
         {
-          voo::cmd_buf_one_time_submit pcb { cb.cb() };
-          clr.cmd_render_pass(cb.cb(), rnd.sw);
-          btl.cmd_render_pass(cb.cb(), rnd.sw);
-          if (mouse_in) btl.run_pick(cb.cb(), rnd.ofs, mx, my);
-          sel.cmd_render_pass(cb.cb(), rnd.sw);
-          cur.run(cb.cb(), rnd.sw);
+          voo::cmd_buf_one_time_submit pcb { rnd.cb.cb() };
+          clr.cmd_render_pass(&rnd);
+          btl.cmd_render_pass(&rnd);
+          sel.cmd_render_pass(&rnd);
+          cur.cmd_render_pass(&rnd);
+
+          if (mouse_in) btl.run_pick(rnd.cb.cb(), rnd.ofs, mx, my);
         }
-        sync.queue_submit(dq.queue(), cb.cb());
+        sync.queue_submit(dq.queue(), rnd.cb.cb());
 
         // XXX: Should this be inside the present guard?
         sel.set(mouse_in ? btl.pick() : -1);

@@ -48,21 +48,21 @@ namespace cursor {
       , m_fbs { rnd->sw.create_framebuffers(*m_rp) }
     {}
 
-    void run(vee::command_buffer cb, voo::swapchain & sw) {
+    void cmd_render_pass(render::system * rnd) {
       upc pc {
         .anchor = casein::mouse_pos,
         .window_size = casein::window_size,
       };
       auto scb = voo::cmd_render_pass(vee::render_pass_begin {
-        .command_buffer = cb,
+        .command_buffer = rnd->cb.cb(),
         .render_pass = *m_rp,
-        .framebuffer = *m_fbs[sw.index()],
-        .extent = sw.extent(),
+        .framebuffer = *m_fbs[rnd->sw.index()],
+        .extent = rnd->sw.extent(),
         .clear_colours { vee::clear_colour(0, 0, 0, 0) },
         .clear_depth = false,
       });
-      vee::cmd_push_vert_frag_constants(cb, *m_pl, &pc);
-      m_oqr.run(cb, sw.extent());
+      vee::cmd_push_vert_frag_constants(rnd->cb.cb(), *m_pl, &pc);
+      m_oqr.run(rnd->cb.cb(), rnd->sw.extent());
     }
   };
 }

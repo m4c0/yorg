@@ -42,9 +42,7 @@ namespace soldiers {
       m_spr.update_atlas(m_atlas.image_view(), *m_smp);
     }
 
-    void cmd_render_pass(vee::command_buffer cb, const voo::swapchain & sw) {
-      m_spr.cmd_render_pass(cb, sw);
-    }
+    void cmd_render_pass(render::system * rnd) { m_spr.cmd_render_pass(rnd); }
     void run_pick(vee::command_buffer cb, const pick::offscreen & ofs, int mx, int my) {
       m_pick.run(cb, ofs, mx, my);
     }

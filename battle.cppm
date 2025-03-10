@@ -26,10 +26,10 @@ namespace battle {
       , m_ene { rnd }
     {}
 
-    void cmd_render_pass(vee::command_buffer cb, voo::swapchain & sw) {
-      m_map.cmd_render_pass(cb, sw);
-      m_sld.cmd_render_pass(cb, sw);
-      m_ene.cmd_render_pass(cb, sw);
+    void cmd_render_pass(render::system * rnd) {
+      m_map.cmd_render_pass(rnd);
+      m_sld.cmd_render_pass(rnd);
+      m_ene.cmd_render_pass(rnd);
     }
     void run_pick(vee::command_buffer cb, pick::offscreen & ofs, int mx, int my) {
       switch (m_state) {
