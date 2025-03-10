@@ -13,7 +13,7 @@ namespace cursor {
     dotz::vec2 window_size;
   };
 
-  export class t {
+  export class system {
     vee::pipeline_layout m_pl = vee::create_pipeline_layout(
       { vee::vert_frag_push_constant_range<upc>() });
     vee::render_pass m_rp;
@@ -21,12 +21,12 @@ namespace cursor {
     hai::array<vee::framebuffer> m_fbs;
 
   public:
-    explicit t(const voo::device_and_queue * dq, const voo::swapchain & sw)
+    explicit system(const voo::device_and_queue & dq, const voo::swapchain & sw)
       : m_rp { 
         vee::create_render_pass({
           .attachments {{
             vee::create_colour_attachment({
-              .format = vee::find_best_surface_image_format(dq->physical_device(), dq->surface()),
+              .format = dq.find_best_surface_image_format(),
               .load_op = vee::attachment_load_op_load,
               .store_op = vee::attachment_store_op_store,
               .initial_layout = vee::image_layout_color_attachment_optimal,
@@ -43,7 +43,7 @@ namespace cursor {
           }},
         })
       }
-      , m_oqr { "cursor", dq->physical_device(), *m_rp, *m_pl }
+      , m_oqr { "cursor", dq.physical_device(), *m_rp, *m_pl }
       , m_fbs { sw.create_framebuffers(*m_rp) }
     {}
 

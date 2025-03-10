@@ -30,7 +30,7 @@ struct init : vapp {
 
       pick::offscreen ofs { dq, sw };
       battle::system btl { dq, sw, ofs };
-      cursor::t cur { &dq, sw };
+      cursor::system cur { dq, sw };
       selection::system sel { dq, sw };
 
       extent_loop([&] {
