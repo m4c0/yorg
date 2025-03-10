@@ -32,9 +32,9 @@ namespace battlemap {
   static auto att(voo::device_and_queue * dq) {
     return vee::attachment_description {
       .format = dq->find_best_surface_image_format(),
-      .load_op = vee::attachment_load_op_clear,
+      .load_op = vee::attachment_load_op_load,
       .store_op = vee::attachment_store_op_store,
-      .initial_layout = vee::image_layout_undefined,
+      .initial_layout = vee::image_layout_color_attachment_optimal,
       .final_layout = vee::image_layout_color_attachment_optimal,
     };
   }
