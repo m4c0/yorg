@@ -4,7 +4,7 @@ import battle;
 import casein;
 import cursor;
 import dotz;
-import pick;
+import render;
 import selection;
 import voo;
 import vapp;
@@ -26,12 +26,11 @@ struct init : vapp {
     main_loop("yorg", [&](auto & dq) {
       voo::single_cb cb { dq.queue_family() };
       voo::frame_sync_stuff sync {};
-      voo::swapchain sw { dq };
+      render::system rnd { &dq };
 
-      pick::offscreen ofs { dq, sw };
-      battle::system btl { dq, sw, ofs };
-      cursor::system cur { dq, sw };
-      selection::system sel { dq, sw };
+      battle::system btl { &rnd };
+      cursor::system cur { &rnd };
+      selection::system sel { &rnd };
 
       extent_loop([&] {
         auto mouse = casein::mouse_pos;
@@ -41,13 +40,13 @@ struct init : vapp {
         int mx = mouse.x * casein::screen_scale_factor;
         int my = mouse.y * casein::screen_scale_factor;
 
-        voo::present_guard pg { dq.queue(), &sw, &sync };
+        voo::present_guard pg { dq.queue(), &rnd.sw, &sync };
         {
           voo::cmd_buf_one_time_submit pcb { cb.cb() };
-          btl.cmd_render_pass(cb.cb(), sw);
-          if (mouse_in) btl.run_pick(cb.cb(), ofs, mx, my);
-          sel.cmd_render_pass(cb.cb(), sw);
-          cur.run(cb.cb(), sw);
+          btl.cmd_render_pass(cb.cb(), rnd.sw);
+          if (mouse_in) btl.run_pick(cb.cb(), rnd.ofs, mx, my);
+          sel.cmd_render_pass(cb.cb(), rnd.sw);
+          cur.run(cb.cb(), rnd.sw);
         }
         sync.queue_submit(dq.queue(), cb.cb());
 

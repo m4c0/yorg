@@ -2,6 +2,7 @@ export module battle;
 import battlemap;
 import enemies;
 import pick;
+import render;
 import soldiers;
 import voo;
 
@@ -19,10 +20,10 @@ namespace battle {
     enemies::system m_ene;
 
   public:
-    system(voo::device_and_queue & dq, voo::swapchain & sw, pick::offscreen & ofs)
-      : m_map { dq, sw, ofs }
-      , m_sld { dq, sw, ofs }
-      , m_ene { dq, sw, ofs }
+    system(render::system * rnd)
+      : m_map { rnd }
+      , m_sld { rnd }
+      , m_ene { rnd }
     {}
 
     void cmd_render_pass(vee::command_buffer cb, voo::swapchain & sw) {

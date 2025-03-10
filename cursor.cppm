@@ -4,6 +4,7 @@ export module cursor;
 import casein;
 import dotz;
 import hai;
+import render;
 import vee;
 import voo;
 
@@ -21,12 +22,12 @@ namespace cursor {
     hai::array<vee::framebuffer> m_fbs;
 
   public:
-    explicit system(const voo::device_and_queue & dq, const voo::swapchain & sw)
+    explicit system(render::system * rnd)
       : m_rp { 
         vee::create_render_pass({
           .attachments {{
             vee::create_colour_attachment({
-              .format = dq.find_best_surface_image_format(),
+              .format = rnd->dq->find_best_surface_image_format(),
               .load_op = vee::attachment_load_op_load,
               .store_op = vee::attachment_store_op_store,
               .initial_layout = vee::image_layout_color_attachment_optimal,
@@ -43,8 +44,8 @@ namespace cursor {
           }},
         })
       }
-      , m_oqr { "cursor", dq.physical_device(), *m_rp, *m_pl }
-      , m_fbs { sw.create_framebuffers(*m_rp) }
+      , m_oqr { "cursor", rnd->dq->physical_device(), *m_rp, *m_pl }
+      , m_fbs { rnd->sw.create_framebuffers(*m_rp) }
     {}
 
     void run(vee::command_buffer cb, voo::swapchain & sw) {

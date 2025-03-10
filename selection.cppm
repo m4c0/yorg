@@ -1,14 +1,15 @@
 export module selection;
 import atlas;
 import dotz;
+import render;
 import spr;
 import vee;
 import voo;
 
 namespace selection {
-  static auto att(voo::device_and_queue & dq) {
+  static auto att(render::system * rnd) {
     return vee::attachment_description {
-      .format = dq.find_best_surface_image_format(),
+      .format = rnd->dq->find_best_surface_image_format(),
       .load_op = vee::attachment_load_op_load,
       .store_op = vee::attachment_store_op_store,
       .initial_layout = vee::image_layout_color_attachment_optimal,
@@ -31,11 +32,11 @@ namespace selection {
     }
 
   public:
-    system(voo::device_and_queue & dq, const voo::swapchain & sw)
-      : m_spr { dq.physical_device(), sw, att(dq) }
-      , m_atlas { dq.physical_device(), dq.queue_family() }
+    system(render::system * rnd)
+      : m_spr { rnd, att(rnd) }
+      , m_atlas { rnd }
     {
-      m_atlas.mapmem(dq.queue(), [](auto * ptr) {
+      m_atlas.mapmem([](auto * ptr) {
         ptr[1] = 0x77777777;
       });
 

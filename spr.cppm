@@ -3,6 +3,7 @@
 export module spr;
 import dotz;
 import hai;
+import render;
 import traits;
 import vee;
 import voo;
@@ -36,15 +37,15 @@ namespace spr {
     unsigned m_count {};
 
   public:
-    system(vee::physical_device pd, const voo::swapchain & sw, const vee::attachment_description & ad)
+    system(render::system * rnd, const vee::attachment_description & ad)
       : m_inst {
-        pd,
+        rnd->dq->physical_device(),
         vee::create_buffer(
           max_inst_count * sizeof(inst),
           vee::buffer_usage::vertex_buffer
         )
       }
-      , m_quad { pd }
+      , m_quad { rnd->dq->physical_device() }
       , m_rp { vee::create_render_pass(vee::create_render_pass_params {
         .attachments {{
           vee::create_colour_attachment(ad),
@@ -83,13 +84,13 @@ namespace spr {
           vee::vertex_attribute_vec2(1, traits::offset_of(&inst::uv)),
         },
       }) }
-      , m_fbs { sw.count() }
+      , m_fbs { rnd->sw.count() }
     {
       for (auto i = 0; i < m_fbs.size(); i++) {
         m_fbs[i] = vee::create_framebuffer({
           .render_pass = *m_rp,
-          .attachments {{ sw.image_view(i) }},
-          .extent = sw.extent(),
+          .attachments {{ rnd->sw.image_view(i) }},
+          .extent = rnd->sw.extent(),
         });
       }
     }

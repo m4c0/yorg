@@ -80,15 +80,15 @@ namespace pick {
     }
 
   public:
-    system(const voo::device_and_queue & dq, const offscreen & ofs)
+    system(const voo::device_and_queue * dq, const offscreen & ofs)
       : m_inst {
-        dq.physical_device(),
+        dq->physical_device(),
         vee::create_buffer(
           max_inst_count * sizeof(inst),
           vee::buffer_usage::vertex_buffer
         )
       }
-      , m_quad { dq.physical_device() }
+      , m_quad { dq->physical_device() }
       , m_rp { vee::create_render_pass(vee::create_render_pass_params {
         .attachments {{
           vee::create_colour_attachment(select_format, vee::image_layout_transfer_src_optimal),
@@ -124,7 +124,7 @@ namespace pick {
           vee::vertex_attribute_uint(1, traits::offset_of(&inst::id)),
         },
       }) }
-      , m_pick { dq.physical_device(), vee::create_transfer_dst_buffer(sizeof(unsigned)) }
+      , m_pick { dq->physical_device(), vee::create_transfer_dst_buffer(sizeof(unsigned)) }
       , m_fbs { ofs.count() }
     {
       for (auto i = 0; i < m_fbs.size(); i++) {
