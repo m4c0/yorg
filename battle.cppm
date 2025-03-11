@@ -31,7 +31,7 @@ namespace battle {
       m_sld.cmd_render_pass(rnd);
       m_ene.cmd_render_pass(rnd);
     }
-    void run_pick(vee::command_buffer cb, pick::offscreen & ofs, int mx, int my) {
+    void run_pick(vee::command_buffer cb, render::offscreen & ofs, int mx, int my) {
       switch (m_state) {
         case state::pick_soldier:
           m_sld.run_pick(cb, ofs, mx, my);

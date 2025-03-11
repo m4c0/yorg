@@ -3,12 +3,11 @@
 export module pick;
 import dotz;
 import hai;
+import render;
 import traits;
 import voo;
 
 namespace pick {
-  export constexpr const auto select_format = VK_FORMAT_R32_UINT;
-
   export struct inst {
     dotz::vec2 pos;
     unsigned id;
@@ -17,31 +16,6 @@ namespace pick {
   static_assert(sizeof(inst) % 16 == 0);
 
   struct upc { float aspect; };
-
-  export class offscreen {
-    hai::array<voo::offscreen::colour_buffer> m_sel;
-    const voo::swapchain * m_sw;
-
-  public:
-    explicit offscreen(voo::device_and_queue & dq, const voo::swapchain & sw)
-      : m_sel { sw.count() }
-      , m_sw { &sw }
-    {
-      for (auto i = 0; i < m_sel.size(); i++) {
-        m_sel[i] = {
-          dq.physical_device(), sw.extent(), pick::select_format,
-          vee::image_usage_colour_attachment,
-          vee::image_usage_transfer_src
-        };
-      }
-    }
-    [[nodiscard]] constexpr auto aspect() const { return m_sw->aspect(); }
-    [[nodiscard]] constexpr auto count() const { return m_sel.size(); }
-    [[nodiscard]] constexpr auto extent() const { return m_sw->extent(); }
-    [[nodiscard]] constexpr auto image() const { return m_sel[m_sw->index()].image(); }
-    [[nodiscard]] constexpr auto image_view(unsigned idx) const { return m_sel[idx].image_view(); }
-    [[nodiscard]] constexpr auto index() const { return m_sw->index(); }
-  };
 
   export class system {
     static constexpr const auto max_inst_count = 1024;
@@ -59,7 +33,7 @@ namespace pick {
 
     unsigned m_count {};
 
-    void cmd_render_pass(vee::command_buffer cb, const offscreen & ofs, int mx, int my) {
+    void cmd_render_pass(vee::command_buffer cb, const render::offscreen & ofs, int mx, int my) {
       upc pc { ofs.aspect() };
       auto scb = voo::cmd_render_pass({
         .command_buffer = cb,
@@ -75,12 +49,12 @@ namespace pick {
       vee::cmd_bind_vertex_buffers(*scb, 1, m_inst.buffer());
       m_quad.run(*scb, 0, m_count);
     }
-    void cmd_copy_image_to_buffer(vee::command_buffer cb, const offscreen & ofs, int mx, int my) {
+    void cmd_copy_image_to_buffer(vee::command_buffer cb, const render::offscreen & ofs, int mx, int my) {
       vee::cmd_copy_image_to_buffer(cb, { mx, my }, { 1, 1 }, ofs.image(), m_pick.buffer());
     }
 
   public:
-    system(const voo::device_and_queue * dq, const offscreen & ofs)
+    system(const voo::device_and_queue * dq, const render::offscreen & ofs)
       : m_inst {
         dq->physical_device(),
         vee::create_buffer(
@@ -91,7 +65,7 @@ namespace pick {
       , m_quad { dq->physical_device() }
       , m_rp { vee::create_render_pass(vee::create_render_pass_params {
         .attachments {{
-          vee::create_colour_attachment(select_format, vee::image_layout_transfer_src_optimal),
+          vee::create_colour_attachment(render::select_format, vee::image_layout_transfer_src_optimal),
         }},
         .subpasses {{
           vee::create_subpass({
@@ -138,7 +112,7 @@ namespace pick {
 
     auto map() { return voo::memiter<inst> { m_inst.memory(), &m_count }; }
 
-    void run(vee::command_buffer cb, const offscreen & ofs, int mx, int my) {
+    void run(vee::command_buffer cb, const render::offscreen & ofs, int mx, int my) {
       cmd_render_pass(cb, ofs, mx, my);
       cmd_copy_image_to_buffer(cb, ofs, mx, my);
     }
