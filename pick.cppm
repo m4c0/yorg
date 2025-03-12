@@ -33,24 +33,24 @@ namespace pick {
 
     unsigned m_count {};
 
-    void cmd_render_pass(vee::command_buffer cb, const render::offscreen & ofs, int mx, int my) {
-      upc pc { ofs.aspect() };
+    void cmd_render_pass(render::system * rnd, int mx, int my) {
+      upc pc { rnd->ofs.aspect() };
       auto scb = voo::cmd_render_pass({
-        .command_buffer = cb,
+        .command_buffer = rnd->cb.cb(),
         .render_pass = *m_rp,
-        .framebuffer = *m_fbs[ofs.index()],
-        .extent = ofs.extent(),
+        .framebuffer = *m_fbs[rnd->ofs.index()],
+        .extent = rnd->ofs.extent(),
         .clear_colours { vee::clear_colour(0, 0, 0, 0) },
       });
-      vee::cmd_set_viewport(*scb, ofs.extent());
+      vee::cmd_set_viewport(*scb, rnd->ofs.extent());
       vee::cmd_set_scissor(*scb, vee::rect { { mx, my }, { 1, 1 } });
       vee::cmd_push_vert_frag_constants(*scb, *m_pl, &pc);
       vee::cmd_bind_gr_pipeline(*scb, *m_ppl);
       vee::cmd_bind_vertex_buffers(*scb, 1, m_inst.buffer());
       m_quad.run(*scb, 0, m_count);
     }
-    void cmd_copy_image_to_buffer(vee::command_buffer cb, const render::offscreen & ofs, int mx, int my) {
-      vee::cmd_copy_image_to_buffer(cb, { mx, my }, { 1, 1 }, ofs.image(), m_pick.buffer());
+    void cmd_copy_image_to_buffer(render::system * rnd, int mx, int my) {
+      vee::cmd_copy_image_to_buffer(rnd->cb.cb(), { mx, my }, { 1, 1 }, rnd->ofs.image(), m_pick.buffer());
     }
 
   public:
@@ -112,9 +112,9 @@ namespace pick {
 
     auto map() { return voo::memiter<inst> { m_inst.memory(), &m_count }; }
 
-    void run(vee::command_buffer cb, const render::offscreen & ofs, int mx, int my) {
-      cmd_render_pass(cb, ofs, mx, my);
-      cmd_copy_image_to_buffer(cb, ofs, mx, my);
+    void run(render::system * rnd, int mx, int my) {
+      cmd_render_pass(rnd, mx, my);
+      cmd_copy_image_to_buffer(rnd, mx, my);
     }
 
     int pick() {

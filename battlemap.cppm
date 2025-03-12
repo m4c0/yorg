@@ -67,9 +67,7 @@ namespace battlemap {
     }
 
     void cmd_render_pass(render::system * rnd) { m_spr.cmd_render_pass(rnd); }
-    void run_pick(vee::command_buffer cb, const render::offscreen & ofs, int mx, int my) {
-      m_pick.run(cb, ofs, mx, my);
-    }
+    void run_pick(render::system * rnd, int mx, int my) { m_pick.run(rnd, mx, my); }
     dotz::vec2 pick() {
       auto p = m_pick.pick();
       if (p == 0) return -1;

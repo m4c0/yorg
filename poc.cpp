@@ -49,7 +49,7 @@ struct init : vapp {
           sel.cmd_render_pass(&rnd);
           cur.cmd_render_pass(&rnd);
 
-          if (mouse_in) btl.run_pick(rnd.cb.cb(), rnd.ofs, mx, my);
+          if (mouse_in) btl.run_pick(&rnd, mx, my);
         }
         sync.queue_submit(dq.queue(), rnd.cb.cb());
 

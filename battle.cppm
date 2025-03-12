@@ -31,14 +31,14 @@ namespace battle {
       m_sld.cmd_render_pass(rnd);
       m_ene.cmd_render_pass(rnd);
     }
-    void run_pick(vee::command_buffer cb, render::offscreen & ofs, int mx, int my) {
+    void run_pick(render::system * rnd, int mx, int my) {
       switch (m_state) {
         case state::pick_soldier:
-          m_sld.run_pick(cb, ofs, mx, my);
+          m_sld.run_pick(rnd, mx, my);
           break;
         case state::pick_target:
-          m_map.run_pick(cb, ofs, mx, my);
-          m_ene.run_pick(cb, ofs, mx, my);
+          m_map.run_pick(rnd, mx, my);
+          m_ene.run_pick(rnd, mx, my);
           break;
       }
     }
