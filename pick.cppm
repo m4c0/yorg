@@ -114,8 +114,6 @@ namespace pick {
     auto map() { return voo::memiter<inst> { m_inst.memory(), &m_count }; }
 
     void run(render::system * rnd) {
-      if (m_count == 0) return;
-
       auto mouse = casein::mouse_pos;
       if (mouse.x < 0 || mouse.x >= casein::window_size.x ||
           mouse.y < 0 || mouse.y >= casein::window_size.y)

@@ -1,5 +1,6 @@
 export module battle;
 import battlemap;
+import casein;
 import enemies;
 import pick;
 import render;
@@ -24,6 +25,12 @@ namespace battle {
       , m_ene { rnd }
     {
       m_sld.pickable(true);
+
+      using namespace casein;
+      handle(MOUSE_UP, [this] {
+        m_sld.pickable(false);
+        handle(MOUSE_UP, nullptr);
+      });
     }
 
     void cmd_render_pass(render::system * rnd) {
