@@ -37,8 +37,10 @@ namespace soldiers {
       m_spr.update_atlas(m_atlas.image_view(), *m_smp);
     }
 
-    void cmd_render_pass(render::system * rnd) { m_spr.cmd_render_pass(rnd); }
-    void run_pick(render::system * rnd) { m_pick.run(rnd); }
+    void cmd_render_pass(render::system * rnd) {
+      m_spr.cmd_render_pass(rnd);
+      m_pick.run(rnd);
+    }
     dotz::vec2 pick() {
       return m_pick.pick() ? dotz::vec2 { 3, 1 } : -1;
     }

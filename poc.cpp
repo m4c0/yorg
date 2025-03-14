@@ -46,8 +46,6 @@ struct init : vapp {
           btl.cmd_render_pass(&rnd);
           sel.cmd_render_pass(&rnd);
           cur.cmd_render_pass(&rnd);
-
-          btl.run_pick(&rnd);
         }
         sync.queue_submit(dq.queue(), rnd.cb.cb());
 
