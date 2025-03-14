@@ -34,11 +34,6 @@ struct init : vapp {
       selection::system sel { &rnd };
 
       extent_loop([&] {
-        auto mouse = casein::mouse_pos;
-        bool mouse_in =
-          mouse.x >= 0 && mouse.x < casein::window_size.x &&
-          mouse.y >= 0 && mouse.y < casein::window_size.y;
-
         voo::present_guard pg { dq.queue(), &rnd.sw, &sync };
         {
           voo::cmd_buf_one_time_submit pcb { rnd.cb.cb() };
@@ -50,6 +45,10 @@ struct init : vapp {
         sync.queue_submit(dq.queue(), rnd.cb.cb());
 
         // XXX: Should this be inside the present guard?
+        auto mouse = casein::mouse_pos;
+        bool mouse_in =
+          mouse.x >= 0 && mouse.x < casein::window_size.x &&
+          mouse.y >= 0 && mouse.y < casein::window_size.y;
         sel.set(mouse_in ? btl.pick() : -1);
       });
       dq.queue()->device_wait_idle();
