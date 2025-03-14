@@ -1,6 +1,7 @@
 #pragma leco add_shader "pick.frag"
 #pragma leco add_shader "pick.vert"
 export module pick;
+import casein;
 import dotz;
 import hai;
 import render;
@@ -112,7 +113,17 @@ namespace pick {
 
     auto map() { return voo::memiter<inst> { m_inst.memory(), &m_count }; }
 
-    void run(render::system * rnd, int mx, int my) {
+    void run(render::system * rnd) {
+      if (m_count == 0) return;
+
+      auto mouse = casein::mouse_pos;
+      if (mouse.x < 0 || mouse.x >= casein::window_size.x ||
+          mouse.y < 0 || mouse.y >= casein::window_size.y)
+        return;
+
+      int mx = mouse.x * casein::screen_scale_factor;
+      int my = mouse.y * casein::screen_scale_factor;
+
       cmd_render_pass(rnd, mx, my);
       cmd_copy_image_to_buffer(rnd, mx, my);
     }

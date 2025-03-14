@@ -38,8 +38,6 @@ struct init : vapp {
         bool mouse_in =
           mouse.x >= 0 && mouse.x < casein::window_size.x &&
           mouse.y >= 0 && mouse.y < casein::window_size.y;
-        int mx = mouse.x * casein::screen_scale_factor;
-        int my = mouse.y * casein::screen_scale_factor;
 
         voo::present_guard pg { dq.queue(), &rnd.sw, &sync };
         {
@@ -49,7 +47,7 @@ struct init : vapp {
           sel.cmd_render_pass(&rnd);
           cur.cmd_render_pass(&rnd);
 
-          if (mouse_in) btl.run_pick(&rnd, mx, my);
+          btl.run_pick(&rnd);
         }
         sync.queue_submit(dq.queue(), rnd.cb.cb());
 

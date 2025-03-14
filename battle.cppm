@@ -33,10 +33,10 @@ namespace battle {
       m_sld.cmd_render_pass(rnd);
       m_ene.cmd_render_pass(rnd);
     }
-    void run_pick(render::system * rnd, int mx, int my) {
-      m_sld.run_pick(rnd, mx, my);
-      m_map.run_pick(rnd, mx, my);
-      m_ene.run_pick(rnd, mx, my);
+    void run_pick(render::system * rnd) {
+      m_sld.run_pick(rnd);
+      m_map.run_pick(rnd);
+      m_ene.run_pick(rnd);
     }
     auto pick() {
       switch (m_state) {
