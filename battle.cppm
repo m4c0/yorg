@@ -7,8 +7,6 @@ import render;
 import soldiers;
 import voo;
 
-using namespace casein;
-
 namespace battle {
   enum class state {
     pick_soldier,
@@ -21,13 +19,7 @@ namespace battle {
     enemies::system m_ene;
 
     void soldier_picked();
-
-    void start_turn() {
-      m_sld.pickable(true);
-      m_map.pickable(false);
-      m_ene.pickable(false);
-      handle(MOUSE_UP, { this, &system::soldier_picked });
-    }
+    void start_turn();
 
   public:
     system(render::system * rnd)
@@ -56,10 +48,18 @@ namespace battle {
 
 module :private;
 
+using namespace casein;
+
 void battle::system::soldier_picked() {
   m_sld.pickable(false);
   m_map.pickable(true);
   m_ene.pickable(true);
   handle(MOUSE_UP, { this, &system::start_turn });
+}
+void battle::system::start_turn() {
+  m_sld.pickable(true);
+  m_map.pickable(false);
+  m_ene.pickable(false);
+  handle(MOUSE_UP, { this, &system::soldier_picked });
 }
 
