@@ -13,8 +13,6 @@ namespace battle {
   };
 
   export class system {
-    state m_state;
-
     battlemap::system m_map;
     soldiers::system m_sld;
     enemies::system m_ene;
@@ -34,13 +32,12 @@ namespace battle {
       m_ene.cmd_render_pass(rnd);
     }
     auto pick() {
-      switch (m_state) {
-        case state::pick_soldier:
-          return m_sld.pick();
-        case state::pick_target:
-          auto res = m_map.pick();
-          return (res.x < 0) ? m_ene.pick() : res;
-      }
+      auto res = m_map.pick();
+      if (res.x >= 0) return res;
+      res = m_sld.pick();
+      if (res.x >= 0) return res;
+      res = m_ene.pick();
+      return res;
     }
   };
 }
