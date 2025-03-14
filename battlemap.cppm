@@ -37,16 +37,11 @@ namespace battlemap {
 
     void load_sprites() {
       auto sm = m_spr.map();
-      auto pm = m_pick.map();
 
       for (auto i = 0U; i < 256; i++) {
         sm += {
           .pos { i % 16, i / 16 },
           .uv = atlas::id_to_uv(map[i]),
-        };
-        if (map[i] == '.') pm += {
-          .pos { i % 16, i / 16 },
-          .id = i + 1,
         };
       }
     }
@@ -72,6 +67,18 @@ namespace battlemap {
       auto p = m_pick.pick();
       if (p == 0) return -1;
       return { (p - 1) % 16, (p - 1) / 16 };
+    }
+
+    void pickable(bool p) {
+      auto pm = m_pick.map();
+      if (!p) return;
+
+      for (auto i = 0U; i < 256; i++) {
+        if (map[i] == '.') pm += {
+          .pos { i % 16, i / 16 },
+          .id = i + 1,
+        };
+      }
     }
   };
 }

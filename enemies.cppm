@@ -16,15 +16,9 @@ namespace enemies {
 
     void load_sprites() {
       auto sm = m_spr.map();
-      auto pm = m_pick.map();
-
       sm += {
         .pos { 7, 4 },
         .uv = atlas::id_to_uv(1),
-      };
-      pm += {
-        .pos { 7, 4 },
-        .id = 1,
       };
     }
 
@@ -46,6 +40,16 @@ namespace enemies {
     void run_pick(render::system * rnd, int mx, int my) { m_pick.run(rnd, mx, my); }
     dotz::vec2 pick() {
       return m_pick.pick() ? dotz::vec2 { 3, 1 } : -1;
+    }
+
+    void pickable(bool p) {
+      auto pm = m_pick.map();
+      if (!p) return;
+
+      pm += {
+        .pos { 7, 4 },
+        .id = 1,
+      };
     }
   };
 }

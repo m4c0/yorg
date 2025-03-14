@@ -24,7 +24,9 @@ namespace battle {
       : m_map { rnd }
       , m_sld { rnd }
       , m_ene { rnd }
-    {}
+    {
+      m_sld.pickable(true);
+    }
 
     void cmd_render_pass(render::system * rnd) {
       m_map.cmd_render_pass(rnd);
@@ -32,15 +34,9 @@ namespace battle {
       m_ene.cmd_render_pass(rnd);
     }
     void run_pick(render::system * rnd, int mx, int my) {
-      switch (m_state) {
-        case state::pick_soldier:
-          m_sld.run_pick(rnd, mx, my);
-          break;
-        case state::pick_target:
-          m_map.run_pick(rnd, mx, my);
-          m_ene.run_pick(rnd, mx, my);
-          break;
-      }
+      m_sld.run_pick(rnd, mx, my);
+      m_map.run_pick(rnd, mx, my);
+      m_ene.run_pick(rnd, mx, my);
     }
     auto pick() {
       switch (m_state) {
