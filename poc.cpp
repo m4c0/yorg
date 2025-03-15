@@ -44,7 +44,8 @@ struct init : vapp {
         }
         sync.queue_submit(dq.queue(), rnd.cb.cb());
 
-        sel.set(btl.pick());
+        btl.pick();
+        //sel.set(btl.pick());
       });
       dq.queue()->device_wait_idle();
     });

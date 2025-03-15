@@ -21,6 +21,13 @@ namespace soldiers {
         .pos { 3, 1 },
         .uv = atlas::id_to_uv(1),
       };
+
+      if (m_pick.pick()) {
+        sm += {
+          .pos = { 3, 1 },
+          .uv = atlas::id_to_uv(2),
+        };
+      }
     }
 
   public:
@@ -31,6 +38,7 @@ namespace soldiers {
     {
       m_atlas.mapmem([](auto * ptr) {
         ptr[1] = 0xFF000077;
+        ptr[2] = 0x77777777;
       });
 
       load_sprites();
@@ -42,6 +50,7 @@ namespace soldiers {
       m_pick.run(rnd);
     }
     dotz::vec2 pick() {
+      load_sprites();
       return m_pick.pick() ? dotz::vec2 { 3, 1 } : -1;
     }
 
