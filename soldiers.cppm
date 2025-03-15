@@ -9,8 +9,9 @@ import voo;
 
 namespace soldiers {
   static constexpr const dotz::vec2 list[] {
-    { 3,  1 },
-    { 8, 12 },
+    {  3,  1 },
+    {  8, 12 },
+    { 14, 14 },
   };
 
   export class system {
