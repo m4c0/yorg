@@ -21,12 +21,24 @@ namespace soldiers {
         .pos { 3, 1 },
         .uv = atlas::id_to_uv(1),
       };
+      sm += {
+        .pos { 8, 12 },
+        .uv = atlas::id_to_uv(1),
+      };
 
-      if (m_pick.pick()) {
-        sm += {
-          .pos = { 3, 1 },
-          .uv = atlas::id_to_uv(2),
-        };
+      switch (m_pick.pick()) {
+        case 1:
+          sm += {
+            .pos = { 3, 1 },
+            .uv = atlas::id_to_uv(2),
+          };
+          break;
+        case 2:
+          sm += {
+            .pos = { 8, 12 },
+            .uv = atlas::id_to_uv(2),
+          };
+          break;
       }
     }
 
@@ -61,6 +73,10 @@ namespace soldiers {
       pm += {
         .pos { 3, 1 },
         .id = 1,
+      };
+      pm += {
+        .pos { 8, 12 },
+        .id = 2,
       };
     }
   };
