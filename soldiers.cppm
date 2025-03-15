@@ -8,38 +8,36 @@ import vee;
 import voo;
 
 namespace soldiers {
+  static constexpr const dotz::vec2 list[] {
+    { 3,  1 },
+    { 8, 12 },
+  };
+
   export class system {
     vee::sampler m_smp = vee::create_sampler(vee::nearest_sampler);
     spr::system m_spr;
     pick::system m_pick;
     atlas::t m_atlas;
 
-    void load_sprites() {
+    dotz::vec2 load_sprites() {
       auto sm = m_spr.map();
-
-      sm += {
-        .pos { 3, 1 },
-        .uv = atlas::id_to_uv(1),
-      };
-      sm += {
-        .pos { 8, 12 },
-        .uv = atlas::id_to_uv(1),
-      };
-
-      switch (m_pick.pick()) {
-        case 1:
-          sm += {
-            .pos = { 3, 1 },
-            .uv = atlas::id_to_uv(2),
-          };
-          break;
-        case 2:
-          sm += {
-            .pos = { 8, 12 },
-            .uv = atlas::id_to_uv(2),
-          };
-          break;
+      for (auto & e : list) {
+        sm += {
+          .pos = e,
+          .uv = atlas::id_to_uv(1),
+        };
       }
+
+      auto p = m_pick.pick();
+      if (p > 0) {
+        sm += {
+          .pos = list[p - 1],
+          .uv = atlas::id_to_uv(2),
+        };
+        return list[p - 1];
+      }
+
+      return -1;
     }
 
   public:
@@ -61,23 +59,19 @@ namespace soldiers {
       m_spr.cmd_render_pass(rnd);
       m_pick.run(rnd);
     }
-    dotz::vec2 pick() {
-      load_sprites();
-      return m_pick.pick() ? dotz::vec2 { 3, 1 } : -1;
-    }
+    dotz::vec2 pick() { return load_sprites(); }
 
     void pickable(bool p) {
       auto pm = m_pick.map();
       if (!p) return;
 
-      pm += {
-        .pos { 3, 1 },
-        .id = 1,
-      };
-      pm += {
-        .pos { 8, 12 },
-        .id = 2,
-      };
+      unsigned i = 1;
+      for (auto & e : list) {
+        pm += {
+          .pos = e,
+          .id = i++,
+        };
+      }
     }
   };
 }
