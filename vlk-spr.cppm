@@ -117,7 +117,6 @@ namespace vlk {
         .render_pass = *m_rp,
         .framebuffer = *m_fbs[sw->index()],
         .extent = sw->extent(),
-        .clear_colours { vee::clear_colour(0, 0, 0, 0) },
       });
       vee::cmd_set_viewport(*scb, sw->extent());
       vee::cmd_set_scissor(*scb, sw->extent());

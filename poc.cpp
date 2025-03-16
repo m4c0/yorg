@@ -30,8 +30,8 @@ struct init : vapp {
         ptr['S'] = 0xFF000077;
       });
       vlk->map_instances([&](vlk::inst * i) {
-        *i++ = { .pos { 0, 0 }, .uv = vlk::id_to_uv(1) };
-        *i++ = { .pos { 3, 3 }, .uv = vlk::id_to_uv(1) };
+        *i++ = { .pos { 0, 0 }, .uv = vlk::id_to_uv('#') };
+        *i++ = { .pos { 3, 3 }, .uv = vlk::id_to_uv('S') };
         return i;
       });
 
