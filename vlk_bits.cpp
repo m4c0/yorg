@@ -8,12 +8,14 @@ namespace vlk::impl {
     voo::frame_sync_stuff m_sync {};
     hai::array<voo::offscreen::colour_buffer> m_sel { m_sw.count() };
 
-    clear m_clr { &m_sw };
+    clear m_clr {};
 
   public:
     static constexpr const auto select_format = VK_FORMAT_R32_UINT;
 
     explicit bits() {
+      vlk::sw = &m_sw;
+
       for (auto i = 0; i < m_sel.size(); i++) {
         m_sel[i] = {
           dq->physical_device(), m_sw.extent(), select_format,

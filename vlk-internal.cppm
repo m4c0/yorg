@@ -3,4 +3,5 @@ import voo;
 
 namespace vlk {
   voo::device_and_queue * dq;
+  voo::swapchain * sw;
 }

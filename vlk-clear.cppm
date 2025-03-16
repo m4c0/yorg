@@ -32,7 +32,7 @@ namespace vlk::impl {
     hai::array<vee::framebuffer> m_fbs;
 
   public:
-    clear(voo::swapchain * sw)
+    clear()
       : m_rp { rnd_pass() }
       , m_fbs { sw->create_framebuffers(*m_rp) }
     {}
