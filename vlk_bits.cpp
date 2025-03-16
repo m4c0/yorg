@@ -21,6 +21,8 @@ namespace vlk::impl {
     cursor m_cur {};
     finish m_fin {};
 
+    pick m_pck {};
+
   public:
     ~bits() { dq->queue()->device_wait_idle(); }
 
@@ -34,6 +36,8 @@ namespace vlk::impl {
         m_spr.cmd_render_pass(*pcb);
         m_cur.cmd_render_pass(*pcb);
         m_fin.cmd_render_pass(*pcb);
+
+        m_pck.cmd_render_pass(*pcb);
       }
       m_sync.queue_submit(dq->queue(), m_cb.cb());
     }

@@ -70,7 +70,7 @@ namespace vlk {
     unsigned m_count {};
 
   public:
-    pick() : m_fbs {} {
+    pick() {
       for (auto i = 0; i < sw->count(); i++) {
         m_sel[i] = {
           dq->physical_device(), sw->extent(), select_format,
@@ -102,20 +102,22 @@ namespace vlk {
       int mx = mouse.x * casein::screen_scale_factor;
       int my = mouse.y * casein::screen_scale_factor;
 
-      upc pc { sw->aspect() };
-      auto scb = voo::cmd_render_pass({
-        .command_buffer = cb,
-        .render_pass = *m_rp,
-        .framebuffer = *m_fbs[sw->index()],
-        .extent = sw->extent(),
-        .clear_colours { vee::clear_colour(0, 0, 0, 0) },
-      });
-      vee::cmd_set_viewport(*scb, sw->extent());
-      vee::cmd_set_scissor(*scb, vee::rect { { mx, my }, { 1, 1 } });
-      vee::cmd_push_vert_frag_constants(*scb, *m_pl, &pc);
-      vee::cmd_bind_gr_pipeline(*scb, *m_ppl);
-      vee::cmd_bind_vertex_buffers(*scb, 1, m_inst.buffer());
-      m_quad.run(*scb, 0, m_count);
+      {
+        upc pc { sw->aspect() };
+        auto scb = voo::cmd_render_pass({
+          .command_buffer = cb,
+          .render_pass = *m_rp,
+          .framebuffer = *m_fbs[sw->index()],
+          .extent = sw->extent(),
+          .clear_colours { vee::clear_colour(0, 0, 0, 0) },
+        });
+        vee::cmd_set_viewport(*scb, sw->extent());
+        vee::cmd_set_scissor(*scb, vee::rect { { mx, my }, { 1, 1 } });
+        vee::cmd_push_vert_frag_constants(*scb, *m_pl, &pc);
+        vee::cmd_bind_gr_pipeline(*scb, *m_ppl);
+        vee::cmd_bind_vertex_buffers(*scb, 1, m_inst.buffer());
+        m_quad.run(*scb, 0, m_count);
+      }
 
       auto iv = m_sel[sw->index()].image();
       vee::cmd_copy_image_to_buffer(cb, { mx, my }, { 1, 1 }, iv, m_pick.buffer());
