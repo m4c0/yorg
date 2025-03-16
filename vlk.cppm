@@ -1,15 +1,11 @@
 #pragma leco add_impl vlk_bits
 export module vlk;
+export import :common;
 import dotz;
 import hai;
 import voo;
 
 namespace vlk {
-  export struct inst {
-    dotz::vec2 pos;
-    dotz::vec2 uv;
-  };
-
   export constexpr auto id_to_uv(unsigned id) {
     return dotz::vec2 { id % 16, id / 16 };
   }

@@ -1,18 +1,13 @@
 #pragma leco add_shader "vlk-spr.frag"
 #pragma leco add_shader "vlk-spr.vert"
 module vlk:spr;
+import :common;
 import :internal;
 import dotz;
 import hai;
 import voo;
 
 namespace vlk {
-  struct inst {
-    dotz::vec2 pos;
-    dotz::vec2 uv;
-  };
-  static_assert(sizeof(inst) % 4 == 0);
-  
   struct upc { float aspect; };
 
   class spr {
