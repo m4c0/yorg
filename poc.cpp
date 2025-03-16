@@ -3,6 +3,8 @@
 import casein;
 import battlemap;
 import dotz;
+import enemies;
+import soldiers;
 import vlk;
 import voo;
 import vapp;
@@ -32,6 +34,8 @@ struct init : vapp {
       });
       vlk->map_instances([&](vlk::inst * i) {
         i = battlemap::load_sprites(i);
+        i = enemies::load_sprites(i);
+        i = soldiers::load_sprites(i);
         return i;
       });
 
