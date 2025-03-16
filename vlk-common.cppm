@@ -7,4 +7,11 @@ namespace vlk {
     dotz::vec2 uv;
   };
   static_assert(sizeof(inst) % 4 == 0);
+
+  export struct pickable {
+    dotz::vec2 pos;
+    unsigned id;
+    float pad;
+  };
+  static_assert(sizeof(pickable) % 4 == 0);
 }

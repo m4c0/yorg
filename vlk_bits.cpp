@@ -2,6 +2,7 @@ module vlk;
 import :clear;
 import :cursor;
 import :finish;
+import :pick;
 import :spr;
 
 namespace vlk::impl {
@@ -14,7 +15,6 @@ namespace vlk::impl {
     global_swapchain m_sw {};
     voo::single_cb m_cb { dq->queue_family() };
     voo::frame_sync_stuff m_sync {};
-    hai::array<voo::offscreen::colour_buffer> m_sel { m_sw.count() };
 
     clear m_clr {};
     spr m_spr {};
@@ -22,17 +22,6 @@ namespace vlk::impl {
     finish m_fin {};
 
   public:
-    static constexpr const auto select_format = VK_FORMAT_R32_UINT;
-
-    explicit bits() {
-      for (auto i = 0; i < m_sel.size(); i++) {
-        m_sel[i] = {
-          dq->physical_device(), m_sw.extent(), select_format,
-          vee::image_usage_colour_attachment,
-          vee::image_usage_transfer_src
-        };
-      }
-    }
     ~bits() { dq->queue()->device_wait_idle(); }
 
     void map_atlas(hai::fn<void, unsigned *> f) override { m_spr.map_atlas(f); }
