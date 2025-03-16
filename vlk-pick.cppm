@@ -1,3 +1,5 @@
+#pragma leco add_shader "vlk-pick.frag"
+#pragma leco add_shader "vlk-pick.vert"
 module vlk:pick;
 import :common;
 import :internal;
@@ -45,8 +47,8 @@ namespace vlk {
       .depth_test = false,
       .blends { vee::colour_blend_none() },
       .shaders {
-        voo::shader("pick.vert.spv").pipeline_vert_stage(),
-        voo::shader("pick.frag.spv").pipeline_frag_stage(),
+        voo::shader("vlk-pick.vert.spv").pipeline_vert_stage(),
+        voo::shader("vlk-pick.frag.spv").pipeline_frag_stage(),
       },
       .bindings {
         m_quad.vertex_input_bind(),
