@@ -3,8 +3,13 @@ import :clear;
 import :spr;
 
 namespace vlk::impl {
+  class global_swapchain : public voo::swapchain {
+  public:
+    global_swapchain() : swapchain { *dq } { sw = this; }
+  };
+
   class bits : public vlk::bits {
-    voo::swapchain m_sw { *dq };
+    global_swapchain m_sw {};
     voo::single_cb m_cb { dq->queue_family() };
     voo::frame_sync_stuff m_sync {};
     hai::array<voo::offscreen::colour_buffer> m_sel { m_sw.count() };
@@ -16,8 +21,6 @@ namespace vlk::impl {
     static constexpr const auto select_format = VK_FORMAT_R32_UINT;
 
     explicit bits() {
-      vlk::sw = &m_sw;
-
       for (auto i = 0; i < m_sel.size(); i++) {
         m_sel[i] = {
           dq->physical_device(), m_sw.extent(), select_format,
