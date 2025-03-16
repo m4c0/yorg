@@ -1,5 +1,5 @@
-#pragma leco add_shader "spr.frag"
-#pragma leco add_shader "spr.vert"
+#pragma leco add_shader "vlk-spr.frag"
+#pragma leco add_shader "vlk-spr.vert"
 module vlk:spr;
 import :internal;
 import dotz;
@@ -66,8 +66,8 @@ namespace vlk {
       .depth_test = false,
       .blends { vee::colour_blend_classic() },
       .shaders {
-        voo::shader("spr.vert.spv").pipeline_vert_stage(),
-        voo::shader("spr.frag.spv").pipeline_frag_stage(),
+        voo::shader("vlk-spr.vert.spv").pipeline_vert_stage(),
+        voo::shader("vlk-spr.frag.spv").pipeline_frag_stage(),
       },
       .bindings {
         m_quad.vertex_input_bind(),
