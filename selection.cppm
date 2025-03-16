@@ -1,8 +1,6 @@
 export module selection;
 import atlas;
 import dotz;
-import render;
-//import spr;
 import vee;
 import voo;
 

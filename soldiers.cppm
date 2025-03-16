@@ -2,8 +2,6 @@ export module soldiers;
 import atlas;
 import dotz;
 import pick;
-import render;
-//import spr;
 import vee;
 import voo;
 

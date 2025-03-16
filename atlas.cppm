@@ -1,6 +1,5 @@
 export module atlas;
 import dotz;
-import render;
 import traits;
 import vee;
 import voo;

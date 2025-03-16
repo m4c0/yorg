@@ -3,8 +3,6 @@ import atlas;
 import dotz;
 import jute;
 import pick;
-import render;
-//import spr;
 import vee;
 import voo;
 

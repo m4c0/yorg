@@ -3,7 +3,6 @@ import battlemap;
 import casein;
 import enemies;
 import pick;
-import render;
 import soldiers;
 import voo;
 

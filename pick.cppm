@@ -4,7 +4,6 @@ export module pick;
 import casein;
 import dotz;
 import hai;
-import render;
 import traits;
 import voo;
 
