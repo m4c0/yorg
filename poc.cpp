@@ -22,7 +22,11 @@ static auto instances(vlk::inst * i) {
   i = battlemap::load_sprites(i);
   i = enemies::load_sprites(i);
   i = soldiers::load_sprites(i);
-  *i++ = { .pos { 8, 8 }, .uv = vlk::id_to_uv('#') };
+  if (g_sel >= 0) {
+    int x = g_sel % 16;
+    int y = g_sel / 16;
+    *i++ = { .pos { x, y }, .uv = vlk::id_to_uv('#') };
+  }
   return i;
 }
 static auto picks(vlk::pickable * i) {
@@ -52,7 +56,12 @@ struct init : vapp {
 
       extent_loop([&] {
         vlk->present();
-        g_sel = vlk->current_pick();
+
+        auto s = vlk->current_pick();
+        if (s != g_sel) {
+          g_sel = s;
+          vlk->map_instances(instances);
+        }
       });
     });
   }
