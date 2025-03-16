@@ -7,6 +7,7 @@ import cursor;
 import dotz;
 import render;
 import selection;
+import vlk;
 import voo;
 import vapp;
 
@@ -25,6 +26,8 @@ struct init : vapp {
   }
   void run() override {
     main_loop("yorg", [&](auto & dq) {
+      auto vlk = vlk::bits::create(&dq);
+
       voo::frame_sync_stuff sync {};
       render::system rnd { &dq };
 
