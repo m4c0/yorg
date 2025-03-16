@@ -9,6 +9,25 @@ import vlk;
 import voo;
 import vapp;
 
+static auto atlas(auto * ptr) {
+  ptr['#'] = 0x77777777;
+  ptr['X'] = 0xFF007700;
+  ptr['.'] = 0xFF770000;
+  ptr['E'] = 0xFF007777;
+  ptr['S'] = 0xFF000077;
+}
+static auto instances(vlk::inst * i) {
+  i = battlemap::load_sprites(i);
+  i = enemies::load_sprites(i);
+  i = soldiers::load_sprites(i);
+  *i++ = { .pos { 8, 8 }, .uv = vlk::id_to_uv('#') };
+  return i;
+}
+static auto picks(vlk::pickable * i) {
+  i = battlemap::load_pickables(i);
+  return i;
+}
+
 struct init : vapp {
   init() {
     using namespace casein;
@@ -25,24 +44,9 @@ struct init : vapp {
   void run() override {
     main_loop("yorg", [&](auto & dq) {
       auto vlk = vlk::bits::create(&dq);
-      vlk->map_atlas([](auto * ptr) {
-        ptr['#'] = 0x77777777;
-        ptr['X'] = 0xFF007700;
-        ptr['.'] = 0xFF770000;
-        ptr['E'] = 0xFF007777;
-        ptr['S'] = 0xFF000077;
-      });
-      vlk->map_instances([&](vlk::inst * i) {
-        i = battlemap::load_sprites(i);
-        i = enemies::load_sprites(i);
-        i = soldiers::load_sprites(i);
-        *i++ = { .pos { 8, 8 }, .uv = vlk::id_to_uv('#') };
-        return i;
-      });
-      vlk->map_picks([&](vlk::pickable * i) {
-        i = battlemap::load_pickables(i);
-        return i;
-      });
+      vlk->map_atlas(atlas);
+      vlk->map_instances(instances);
+      vlk->map_picks(picks);
 
       extent_loop([&] {
         vlk->present();
