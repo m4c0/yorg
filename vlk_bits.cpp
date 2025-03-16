@@ -42,6 +42,7 @@ namespace vlk::impl {
       }
       m_sync.queue_submit(dq->queue(), m_cb.cb());
     }
+    unsigned current_pick() override { return m_pck.current(); } 
   };
 }
 namespace vlk {

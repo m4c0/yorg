@@ -9,6 +9,8 @@ import vlk;
 import voo;
 import vapp;
 
+static int g_sel = -1;
+
 static auto atlas(auto * ptr) {
   ptr['#'] = 0x77777777;
   ptr['X'] = 0xFF007700;
@@ -50,6 +52,7 @@ struct init : vapp {
 
       extent_loop([&] {
         vlk->present();
+        g_sel = vlk->current_pick();
       });
     });
   }

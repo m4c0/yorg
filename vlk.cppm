@@ -18,6 +18,7 @@ namespace vlk {
     virtual void map_instances(hai::fn<inst *, inst *> f) = 0;
     virtual void map_picks(hai::fn<pickable *, pickable *> f) = 0;
     virtual void present() = 0;
+    virtual unsigned current_pick() = 0;
 
     static hai::uptr<bits> create(voo::device_and_queue * dq);
   };
