@@ -32,7 +32,7 @@ namespace vlk::impl {
     hai::array<vee::framebuffer> m_fbs { sw->create_framebuffers(*m_rp) };
 
   public:
-    void cmd_render_pass(vee::command_buffer cb, voo::swapchain * sw) {
+    void cmd_render_pass(vee::command_buffer cb) {
       voo::cmd_render_pass({
         .command_buffer = cb,
         .render_pass = *m_rp,
