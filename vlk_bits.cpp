@@ -1,5 +1,6 @@
 module vlk;
 import :clear;
+import :spr;
 
 namespace vlk::impl {
   class bits : public vlk::bits {
@@ -9,6 +10,7 @@ namespace vlk::impl {
     hai::array<voo::offscreen::colour_buffer> m_sel { m_sw.count() };
 
     clear m_clr {};
+    spr m_spr {};
 
   public:
     static constexpr const auto select_format = VK_FORMAT_R32_UINT;
@@ -30,6 +32,7 @@ namespace vlk::impl {
       {
         voo::cmd_buf_one_time_submit pcb { m_cb.cb() };
         m_clr.cmd_render_pass(*pcb);
+        m_spr.cmd_render_pass(*pcb);
         fn();
       }
       m_sync.queue_submit(dq->queue(), m_cb.cb());
