@@ -1,5 +1,6 @@
 module vlk;
 import :clear;
+import :cursor;
 import :finish;
 import :spr;
 
@@ -17,6 +18,7 @@ namespace vlk::impl {
 
     clear m_clr {};
     spr m_spr {};
+    cursor m_cur {};
     finish m_fin {};
 
   public:
@@ -39,6 +41,7 @@ namespace vlk::impl {
         voo::cmd_buf_one_time_submit pcb { m_cb.cb() };
         m_clr.cmd_render_pass(*pcb);
         m_spr.cmd_render_pass(*pcb);
+        m_cur.cmd_render_pass(*pcb);
         m_fin.cmd_render_pass(*pcb);
       }
       m_sync.queue_submit(dq->queue(), m_cb.cb());
