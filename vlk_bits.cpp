@@ -31,13 +31,12 @@ namespace vlk::impl {
     }
     ~bits() { dq->queue()->device_wait_idle(); }
 
-    void present(hai::fn<void> fn) override {
+    void present() override {
       voo::present_guard pg { dq->queue(), &m_sw, &m_sync };
       {
         voo::cmd_buf_one_time_submit pcb { m_cb.cb() };
         m_clr.cmd_render_pass(*pcb);
         m_spr.cmd_render_pass(*pcb);
-        fn();
       }
       m_sync.queue_submit(dq->queue(), m_cb.cb());
     }
