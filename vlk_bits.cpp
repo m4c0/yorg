@@ -5,6 +5,7 @@ namespace vlk::impl {
     voo::device_and_queue * m_dq;
     voo::swapchain m_sw { *m_dq };
     voo::single_cb m_cb { m_dq->queue_family() };
+    voo::frame_sync_stuff m_sync {};
     hai::array<voo::offscreen::colour_buffer> m_sel { m_sw.count() };
 
   public:
@@ -18,6 +19,15 @@ namespace vlk::impl {
           vee::image_usage_transfer_src
         };
       }
+    }
+
+    void present(hai::fn<void> fn) override {
+      voo::present_guard pg { m_dq->queue(), &m_sw, &m_sync };
+      {
+        voo::cmd_buf_one_time_submit pcb { m_cb.cb() };
+        fn();
+      }
+      m_sync.queue_submit(m_dq->queue(), m_cb.cb());
     }
   };
 }

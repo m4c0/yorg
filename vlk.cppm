@@ -6,6 +6,10 @@ import voo;
 namespace vlk {
   export class bits {
   public:
+    virtual ~bits() {}
+
+    virtual void present(hai::fn<void> fn) = 0;
+
     static hai::uptr<bits> create(voo::device_and_queue * dq);
   };
 }
