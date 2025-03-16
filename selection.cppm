@@ -1,5 +1,4 @@
 export module selection;
-import atlas;
 import dotz;
 import vee;
 import voo;

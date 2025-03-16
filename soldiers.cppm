@@ -1,5 +1,4 @@
 export module soldiers;
-import atlas;
 import dotz;
 import pick;
 import vee;

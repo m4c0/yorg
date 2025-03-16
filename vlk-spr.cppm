@@ -80,18 +80,35 @@ namespace vlk {
       },
     }) };
 
+    vee::sampler m_smp = vee::create_sampler(vee::nearest_sampler);
+    voo::h2l_image m_img { dq->physical_device(), 16, 16, VK_FORMAT_R8G8B8A8_SRGB };
+
     hai::array<vee::framebuffer> m_fbs = sw->create_framebuffers(*m_rp);
 
+    bool m_dirty_atlas {};
     unsigned m_count {};
 
   public:
-    auto map() { return voo::memiter<inst> { m_inst.memory(), &m_count }; }
+    spr() {
+      vee::update_descriptor_set(m_ds.descriptor_set(), 0, m_img.iv(), *m_smp);
+    }
 
-    void update_atlas(vee::image_view::type iv, vee::sampler::type smp) {
-      vee::update_descriptor_set(m_ds.descriptor_set(), 0, iv, smp);
+    auto map_atlas(auto && fn) {
+      voo::mapmem mm { m_img.host_memory() };
+      fn(static_cast<unsigned *>(*mm));
+      m_dirty_atlas = true;
+    }
+    auto map_instances(auto && fn) {
+      voo::memiter<inst> me { m_inst.memory(), &m_count };
+      fn(me);
     }
 
     void cmd_render_pass(vee::command_buffer cb) {
+      if (m_dirty_atlas) {
+        m_img.setup_copy(cb);
+        m_dirty_atlas = false;
+      }
+
       upc pc { sw->aspect() };
       auto scb = voo::cmd_render_pass({
         .command_buffer = cb,
@@ -107,6 +124,10 @@ namespace vlk {
       vee::cmd_bind_gr_pipeline(*scb, *m_ppl);
       vee::cmd_bind_vertex_buffers(*scb, 1, m_inst.buffer());
       m_quad.run(*scb, 0, m_count);
+    }
+
+    static constexpr auto id_to_uv(unsigned id) {
+      return dotz::vec2 { id % 16, id / 16 };
     }
   };
 }

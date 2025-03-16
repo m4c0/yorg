@@ -1,5 +1,4 @@
 export module battlemap;
-import atlas;
 import dotz;
 import jute;
 import pick;
