@@ -29,6 +29,7 @@ namespace vlk::impl {
         };
       }
     }
+    ~bits() { dq->queue()->device_wait_idle(); }
 
     void present(hai::fn<void> fn) override {
       voo::present_guard pg { dq->queue(), &m_sw, &m_sync };

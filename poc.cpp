@@ -43,7 +43,6 @@ struct init : vapp {
         btl.pick();
         //sel.set(btl.pick());
       });
-      dq.queue()->device_wait_idle();
     });
   }
 } i;
