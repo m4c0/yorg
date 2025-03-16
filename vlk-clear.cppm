@@ -1,19 +1,20 @@
 module vlk:clear;
+import :internal;
 import hai;
 import voo;
 
-static auto att(voo::device_and_queue * dq) {
+static auto att() {
   return vee::attachment_description {
-    .format = dq->find_best_surface_image_format(),
+    .format = vlk::dq->find_best_surface_image_format(),
     .load_op = vee::attachment_load_op_clear,
     .store_op = vee::attachment_store_op_store,
     .initial_layout = vee::image_layout_undefined,
     .final_layout = vee::image_layout_color_attachment_optimal,
   };
 }
-static auto rnd_pass(voo::device_and_queue * dq) {
+static auto rnd_pass() {
   return vee::create_render_pass(vee::create_render_pass_params {
-    .attachments {{ vee::create_colour_attachment(att(dq)) }},
+    .attachments {{ vee::create_colour_attachment(att()) }},
     .subpasses {{
       vee::create_subpass({
         .colours {{
@@ -31,8 +32,8 @@ namespace vlk::impl {
     hai::array<vee::framebuffer> m_fbs;
 
   public:
-    clear(voo::device_and_queue * dq, voo::swapchain * sw)
-      : m_rp { rnd_pass(dq) }
+    clear(voo::swapchain * sw)
+      : m_rp { rnd_pass() }
       , m_fbs { sw->create_framebuffers(*m_rp) }
     {}
 
