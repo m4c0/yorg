@@ -1,3 +1,5 @@
+#pragma leco add_shader "vlk-cursor.frag"
+#pragma leco add_shader "vlk-cursor.vert"
 module vlk:cursor;
 import :internal;
 import casein;
@@ -34,7 +36,7 @@ namespace vlk {
       }},
       .dependencies {{ vee::create_colour_dependency() }},
     });
-    voo::one_quad_render m_oqr { "cursor", dq->physical_device(), *m_rp, *m_pl };
+    voo::one_quad_render m_oqr { "vlk-cursor", dq->physical_device(), *m_rp, *m_pl };
     hai::array<vee::framebuffer> m_fbs = sw->create_framebuffers(*m_rp);
 
   public:
