@@ -29,6 +29,11 @@ struct init : vapp {
         ptr['E'] = 0xFF007777;
         ptr['S'] = 0xFF000077;
       });
+      vlk->map_instances([&](vlk::inst * i) {
+        *i++ = { .pos { 0, 0 }, .uv = vlk::id_to_uv(1) };
+        *i++ = { .pos { 3, 3 }, .uv = vlk::id_to_uv(1) };
+        return i;
+      });
 
       extent_loop([&] {
         vlk->present();

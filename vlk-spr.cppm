@@ -99,8 +99,10 @@ namespace vlk {
       m_dirty_atlas = true;
     }
     auto map_instances(auto && fn) {
-      voo::memiter<inst> me { m_inst.memory(), &m_count };
-      fn(me);
+      voo::mapmem mm { m_inst.memory() };
+      auto s = static_cast<inst *>(*mm);
+      auto e = fn(s);
+      m_count = e - s;
     }
 
     void cmd_render_pass(vee::command_buffer cb) {
@@ -124,10 +126,6 @@ namespace vlk {
       vee::cmd_bind_gr_pipeline(*scb, *m_ppl);
       vee::cmd_bind_vertex_buffers(*scb, 1, m_inst.buffer());
       m_quad.run(*scb, 0, m_count);
-    }
-
-    static constexpr auto id_to_uv(unsigned id) {
-      return dotz::vec2 { id % 16, id / 16 };
     }
   };
 }
