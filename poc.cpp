@@ -1,7 +1,6 @@
 #pragma leco app
 
 import battle;
-import clearpass;
 import casein;
 import cursor;
 import dotz;
@@ -28,24 +27,18 @@ struct init : vapp {
     main_loop("yorg", [&](auto & dq) {
       auto vlk = vlk::bits::create(&dq);
 
-      voo::frame_sync_stuff sync {};
       render::system rnd { &dq };
 
-      clearpass::system clr { &rnd };
       battle::system btl { &rnd };
       cursor::system cur { &rnd };
       selection::system sel { &rnd };
 
       extent_loop([&] {
-        voo::present_guard pg { dq.queue(), &rnd.sw, &sync };
-        {
-          voo::cmd_buf_one_time_submit pcb { rnd.cb.cb() };
-          clr.cmd_render_pass(&rnd);
+        vlk->present([&] {
           btl.cmd_render_pass(&rnd);
           sel.cmd_render_pass(&rnd);
           cur.cmd_render_pass(&rnd);
-        }
-        sync.queue_submit(dq.queue(), rnd.cb.cb());
+        });
 
         btl.pick();
         //sel.set(btl.pick());

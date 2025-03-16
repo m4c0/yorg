@@ -45,7 +45,7 @@ namespace cursor {
         })
       }
       , m_oqr { "cursor", rnd->dq->physical_device(), *m_rp, *m_pl }
-      , m_fbs { rnd->sw.create_framebuffers(*m_rp) }
+      , m_fbs { rnd->sw->create_framebuffers(*m_rp) }
     {}
 
     void cmd_render_pass(render::system * rnd) {
@@ -56,13 +56,13 @@ namespace cursor {
       auto scb = voo::cmd_render_pass(vee::render_pass_begin {
         .command_buffer = rnd->cb.cb(),
         .render_pass = *m_rp,
-        .framebuffer = *m_fbs[rnd->sw.index()],
-        .extent = rnd->sw.extent(),
+        .framebuffer = *m_fbs[rnd->sw->index()],
+        .extent = rnd->sw->extent(),
         .clear_colours { vee::clear_colour(0, 0, 0, 0) },
         .clear_depth = false,
       });
       vee::cmd_push_vert_frag_constants(rnd->cb.cb(), *m_pl, &pc);
-      m_oqr.run(rnd->cb.cb(), rnd->sw.extent());
+      m_oqr.run(rnd->cb.cb(), rnd->sw->extent());
     }
   };
 }

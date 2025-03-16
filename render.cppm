@@ -32,8 +32,8 @@ namespace render {
 
   export struct system {
     voo::device_and_queue * dq {};
-    voo::swapchain sw { *dq };
+    voo::swapchain * sw {};
     voo::single_cb cb { dq->queue_family() };
-    offscreen ofs { *dq, sw };
+    offscreen ofs { *dq, *sw };
   };
 }

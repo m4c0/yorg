@@ -94,13 +94,13 @@ namespace spr {
           vee::vertex_attribute_vec2(1, traits::offset_of(&inst::uv)),
         },
       }) }
-      , m_fbs { rnd->sw.count() }
+      , m_fbs { rnd->sw->count() }
     {
       for (auto i = 0; i < m_fbs.size(); i++) {
         m_fbs[i] = vee::create_framebuffer({
           .render_pass = *m_rp,
-          .attachments {{ rnd->sw.image_view(i) }},
-          .extent = rnd->sw.extent(),
+          .attachments {{ rnd->sw->image_view(i) }},
+          .extent = rnd->sw->extent(),
         });
       }
     }
@@ -112,16 +112,16 @@ namespace spr {
     }
 
     void cmd_render_pass(render::system * rnd) {
-      upc pc { rnd->sw.aspect() };
+      upc pc { rnd->sw->aspect() };
       auto scb = voo::cmd_render_pass({
         .command_buffer = rnd->cb.cb(),
         .render_pass = *m_rp,
-        .framebuffer = *m_fbs[rnd->sw.index()],
-        .extent = rnd->sw.extent(),
+        .framebuffer = *m_fbs[rnd->sw->index()],
+        .extent = rnd->sw->extent(),
         .clear_colours { vee::clear_colour(0, 0, 0, 0) },
       });
-      vee::cmd_set_viewport(*scb, rnd->sw.extent());
-      vee::cmd_set_scissor(*scb, rnd->sw.extent());
+      vee::cmd_set_viewport(*scb, rnd->sw->extent());
+      vee::cmd_set_scissor(*scb, rnd->sw->extent());
       vee::cmd_push_vert_frag_constants(*scb, *m_pl, &pc);
       vee::cmd_bind_descriptor_set(*scb, *m_pl, 0, m_ds.descriptor_set());
       vee::cmd_bind_gr_pipeline(*scb, *m_ppl);
