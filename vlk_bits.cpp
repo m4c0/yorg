@@ -1,4 +1,5 @@
 module vlk;
+import :clear;
 
 namespace vlk::impl {
   class bits : public vlk::bits {
@@ -7,6 +8,8 @@ namespace vlk::impl {
     voo::single_cb m_cb { m_dq->queue_family() };
     voo::frame_sync_stuff m_sync {};
     hai::array<voo::offscreen::colour_buffer> m_sel { m_sw.count() };
+
+    clear m_clr { m_dq, &m_sw };
 
   public:
     static constexpr const auto select_format = VK_FORMAT_R32_UINT;
@@ -25,6 +28,7 @@ namespace vlk::impl {
       voo::present_guard pg { m_dq->queue(), &m_sw, &m_sync };
       {
         voo::cmd_buf_one_time_submit pcb { m_cb.cb() };
+        m_clr.cmd_render_pass(m_cb.cb(), &m_sw);
         fn();
       }
       m_sync.queue_submit(m_dq->queue(), m_cb.cb());
