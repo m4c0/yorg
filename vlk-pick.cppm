@@ -3,6 +3,7 @@
 module vlk:pick;
 import :common;
 import :internal;
+import casein;
 import hai;
 import voo;
 
@@ -92,13 +93,22 @@ namespace vlk {
       m_count = e - s;
     }
 
-    void cmd_render_pass(vee::command_buffer cb, int mx, int my) {
+    void cmd_render_pass(vee::command_buffer cb) {
+      auto mouse = casein::mouse_pos;
+      if (mouse.x < 0 || mouse.x >= casein::window_size.x ||
+          mouse.y < 0 || mouse.y >= casein::window_size.y)
+        return;
+
+      int mx = mouse.x * casein::screen_scale_factor;
+      int my = mouse.y * casein::screen_scale_factor;
+
       upc pc { sw->aspect() };
       auto scb = voo::cmd_render_pass({
         .command_buffer = cb,
         .render_pass = *m_rp,
         .framebuffer = *m_fbs[sw->index()],
         .extent = sw->extent(),
+        .clear_colours { vee::clear_colour(0, 0, 0, 0) },
       });
       vee::cmd_set_viewport(*scb, sw->extent());
       vee::cmd_set_scissor(*scb, vee::rect { { mx, my }, { 1, 1 } });
@@ -109,6 +119,11 @@ namespace vlk {
 
       auto iv = m_sel[sw->index()].image();
       vee::cmd_copy_image_to_buffer(cb, { mx, my }, { 1, 1 }, iv, m_pick.buffer());
+    }
+
+    int current() {
+      voo::mapmem mm { m_pick.memory() };
+      return *static_cast<unsigned *>(*mm);
     }
   };
 }
