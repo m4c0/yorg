@@ -1,6 +1,7 @@
 #pragma leco app
 
 import casein;
+import battlemap;
 import dotz;
 import vlk;
 import voo;
@@ -30,8 +31,7 @@ struct init : vapp {
         ptr['S'] = 0xFF000077;
       });
       vlk->map_instances([&](vlk::inst * i) {
-        *i++ = { .pos { 0, 0 }, .uv = vlk::id_to_uv('#') };
-        *i++ = { .pos { 3, 3 }, .uv = vlk::id_to_uv('S') };
+        i = battlemap::load_sprites(i);
         return i;
       });
 
