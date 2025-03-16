@@ -32,4 +32,13 @@ namespace battlemap {
     }
     return inst;
   }
+  export auto load_pickables(auto * inst) {
+    for (auto i = 0U; i < 256; i++) {
+      *inst++ = {
+        .pos { i % 16, i / 16 },
+        .id = i,
+      };
+    }
+    return inst;
+  }
 }

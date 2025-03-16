@@ -39,6 +39,10 @@ struct init : vapp {
         *i++ = { .pos { 8, 8 }, .uv = vlk::id_to_uv('#') };
         return i;
       });
+      vlk->map_picks([&](vlk::pickable * i) {
+        i = battlemap::load_pickables(i);
+        return i;
+      });
 
       extent_loop([&] {
         vlk->present();
