@@ -36,6 +36,7 @@ struct init : vapp {
         i = battlemap::load_sprites(i);
         i = enemies::load_sprites(i);
         i = soldiers::load_sprites(i);
+        *i++ = { .pos { 8, 8 }, .uv = vlk::id_to_uv('#') };
         return i;
       });
 
