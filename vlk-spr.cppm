@@ -93,7 +93,7 @@ namespace vlk {
       vee::update_descriptor_set(m_ds.descriptor_set(), 0, m_img.iv(), *m_smp);
     }
 
-    auto map_atlas(auto && fn) {
+    void map_atlas(auto && fn) {
       voo::mapmem mm { m_img.host_memory() };
       fn(static_cast<unsigned *>(*mm));
       m_dirty_atlas = true;

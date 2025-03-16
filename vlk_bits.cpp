@@ -35,6 +35,7 @@ namespace vlk::impl {
     }
     ~bits() { dq->queue()->device_wait_idle(); }
 
+    void map_atlas(hai::fn<void, unsigned *> f) override { m_spr.map_atlas(f); }
     void present() override {
       voo::present_guard pg { dq->queue(), &m_sw, &m_sync };
       {

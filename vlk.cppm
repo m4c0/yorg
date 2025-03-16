@@ -8,6 +8,7 @@ namespace vlk {
   public:
     virtual ~bits() {}
 
+    virtual void map_atlas(hai::fn<void, unsigned *> f) = 0;
     virtual void present() = 0;
 
     static hai::uptr<bits> create(voo::device_and_queue * dq);
