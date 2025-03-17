@@ -1,8 +1,6 @@
 #pragma leco app
 
-import battlemap;
-import enemies;
-import soldiers;
+import state;
 import vlk;
 
 static int g_sel = -1;
@@ -15,13 +13,13 @@ static auto atlas(auto * ptr) {
   ptr['S'] = 0xFF000099;
 }
 static auto instances(vlk::inst * i) {
-  battlemap::foreach([&](int x, int y, char c) {
+  state::battlemap::foreach([&](int x, int y, char c) {
     *i++ = { .pos { x, y }, .uv = vlk::id_to_uv(c) };
   });
-  enemies::foreach([&](int x, int y) {
+  state::enemies::foreach([&](int x, int y) {
     *i++ = { .pos { x, y }, .uv = vlk::id_to_uv('E') };
   });
-  soldiers::foreach([&](int x, int y) {
+  state::soldiers::foreach([&](int x, int y) {
     *i++ = { .pos { x, y }, .uv = vlk::id_to_uv('S') };
   });
 
@@ -33,7 +31,7 @@ static auto instances(vlk::inst * i) {
   return i;
 }
 static auto picks(vlk::pickable * i) {
-  battlemap::foreach([&](unsigned x, unsigned y, char c) {
+  state::battlemap::foreach([&](unsigned x, unsigned y, char c) {
     if (c != '.') return;
     *i++ = { .pos { x, y }, .id = y * 16 + x + 1 };
   });
