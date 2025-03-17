@@ -1,5 +1,6 @@
 #pragma leco app
 
+import casein;
 import state;
 import vlk;
 
@@ -56,3 +57,13 @@ static auto & p = vlk::after_present = [] {
     vlk::map_instances(instances);
   }
 };
+
+static auto zz = [] {
+  using namespace casein;
+  handle(MOUSE_DOWN, [] {
+    if (g_sel != -1) {
+      vlk::map_picks(pick_battle);
+    }
+  });
+  return 0;
+}();
