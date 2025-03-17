@@ -41,9 +41,9 @@ static auto & i = vlk::on_init = [](auto * vlk) {
   vlk->map_picks(picks);
 };
 static auto & p = vlk::after_present = [](auto * vlk) {
-  auto s = vlk->current_pick();
+  auto s = vlk->current_pick() - 1;
   if (s != g_sel) {
-    g_sel = s - 1;
+    g_sel = s;
     vlk->map_instances(instances);
   }
 };
