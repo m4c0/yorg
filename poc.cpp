@@ -8,11 +8,11 @@ import vlk;
 static int g_sel = -1;
 
 static auto atlas(auto * ptr) {
-  ptr['#'] = 0x77777777;
-  ptr['X'] = 0xFF007700;
-  ptr['.'] = 0xFF770000;
-  ptr['E'] = 0xFF007777;
-  ptr['S'] = 0xFF000077;
+  ptr['#'] = 0x77999999;
+  ptr['.'] = 0xFF003300;
+  ptr['X'] = 0xFF770000;
+  ptr['E'] = 0xFF003399;
+  ptr['S'] = 0xFF000099;
 }
 static auto instances(vlk::inst * i) {
   battlemap::foreach([&](int x, int y, char c) {
