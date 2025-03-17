@@ -30,6 +30,7 @@ static auto instances(vlk::inst * i) {
 }
 static auto picks(vlk::pickable * i) {
   battlemap::foreach([&](unsigned x, unsigned y, char c) {
+    if (c != '.') return;
     *i++ = { .pos { x, y }, .id = y * 16 + x + 1 };
   });
   return i;
