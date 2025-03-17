@@ -5,6 +5,7 @@ import state;
 import vlk;
 
 static int g_sel = -1;
+static int g_soldier_sel = -1;
 
 static auto atlas(auto * ptr) {
   ptr['#'] = 0x77999999;
@@ -29,6 +30,11 @@ static auto instances(vlk::inst * i) {
     int y = g_sel / 16;
     *i++ = { .pos { x, y }, .uv = vlk::id_to_uv('#') };
   }
+  if (g_soldier_sel >= 0) {
+    int x = g_soldier_sel % 16;
+    int y = g_soldier_sel / 16;
+    *i++ = { .pos { x, y }, .uv = vlk::id_to_uv('#') };
+  }
   return i;
 }
 static auto pick_battle(vlk::pickable * i) {
@@ -45,10 +51,29 @@ static auto pick_soldier(vlk::pickable * i) {
   return i;
 }
 
+static void set_soldier_pick();
+static void set_target_pick() {
+  if (g_sel < 0) return;
+  g_soldier_sel = g_sel;
+  vlk::map_picks(pick_battle);
+
+  casein::handle(casein::MOUSE_DOWN, set_soldier_pick);
+}
+static void set_soldier_pick() {
+  if (g_sel < 0) return;
+  g_soldier_sel = -1;
+  g_sel = -1;
+  vlk::map_picks(pick_soldier);
+
+  casein::handle(casein::MOUSE_DOWN, set_target_pick);
+}
+
 static auto & i = vlk::on_init = [] {
   vlk::map_atlas(atlas);
   vlk::map_instances(instances);
   vlk::map_picks(pick_soldier);
+
+  casein::handle(casein::MOUSE_DOWN, set_target_pick);
 };
 static auto & p = vlk::after_present = [] {
   auto s = vlk::current_pick() - 1;
@@ -57,13 +82,3 @@ static auto & p = vlk::after_present = [] {
     vlk::map_instances(instances);
   }
 };
-
-static auto zz = [] {
-  using namespace casein;
-  handle(MOUSE_DOWN, [] {
-    if (g_sel != -1) {
-      vlk::map_picks(pick_battle);
-    }
-  });
-  return 0;
-}();
