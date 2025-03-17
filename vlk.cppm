@@ -10,16 +10,13 @@ namespace vlk {
     return dotz::vec2 { id % 16, id / 16 };
   }
 
-  export class bits {
-  public:
-    virtual ~bits() {}
-
+  export struct bits {
     virtual void map_atlas(hai::fn<void, unsigned *> f) = 0;
     virtual void map_instances(hai::fn<inst *, inst *> f) = 0;
     virtual void map_picks(hai::fn<pickable *, pickable *> f) = 0;
-    virtual void present() = 0;
     virtual unsigned current_pick() = 0;
-
-    static hai::uptr<bits> create(voo::device_and_queue * dq);
   };
+
+  export hai::fn<void, bits *> on_init {};
+  export hai::fn<void, bits *> after_present {};
 }

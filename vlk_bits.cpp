@@ -4,15 +4,10 @@ import :cursor;
 import :finish;
 import :pick;
 import :spr;
+import vapp;
 
 namespace vlk::impl {
-  class global_swapchain : public voo::swapchain {
-  public:
-    global_swapchain() : swapchain { *dq } { sw = this; }
-  };
-
   class bits : public vlk::bits {
-    global_swapchain m_sw {};
     voo::single_cb m_cb { dq->queue_family() };
     voo::frame_sync_stuff m_sync {};
 
@@ -29,8 +24,8 @@ namespace vlk::impl {
     void map_atlas(hai::fn<void, unsigned *> f) override { m_spr.map_atlas(f); }
     void map_instances(hai::fn<inst *, inst *> f) override { m_spr.map_instances(f); }
     void map_picks(hai::fn<pickable *, pickable *> f) override { m_pck.map(f); }
-    void present() override {
-      voo::present_guard pg { dq->queue(), &m_sw, &m_sync };
+    void present() {
+      voo::present_guard pg { dq->queue(), sw, &m_sync };
       {
         voo::cmd_buf_one_time_submit pcb { m_cb.cb() };
         m_clr.cmd_render_pass(*pcb);
@@ -45,24 +40,34 @@ namespace vlk::impl {
     unsigned current_pick() override { return m_pck.current(); } 
   };
 }
-namespace vlk {
-  hai::uptr<bits> bits::create(voo::device_and_queue * dq) {
-    vlk::dq = dq;
-    return hai::uptr<bits> { new impl::bits {} };
+
+struct init : vapp {
+  init() {
+    using namespace casein;
+
+    handle(MOUSE_ENTER, [] {
+      casein::cursor_visible = false;
+      casein::interrupt(casein::IRQ_CURSOR);
+    });
+    handle(MOUSE_LEAVE, [] {
+      casein::cursor_visible = true;
+      casein::interrupt(casein::IRQ_CURSOR);
+    });
   }
-}
+  void run() override {
+    main_loop("yorg", [&](auto & dq) {
+      voo::swapchain sw { dq };
 
-static auto i = [] {
-  using namespace casein;
+      vlk::dq = &dq;
+      vlk::sw = &sw;
 
-  handle(MOUSE_ENTER, [] {
-    casein::cursor_visible = false;
-    casein::interrupt(casein::IRQ_CURSOR);
-  });
-  handle(MOUSE_LEAVE, [] {
-    casein::cursor_visible = true;
-    casein::interrupt(casein::IRQ_CURSOR);
-  });
+      vlk::impl::bits bits {};
+      vlk::on_init(&bits);
 
-  return 0;
-}(); 
+      extent_loop([&] {
+        bits.present();
+        vlk::after_present(&bits);
+      });
+    });
+  }
+} i;

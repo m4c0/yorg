@@ -1,13 +1,9 @@
 #pragma leco app
 
-import casein;
 import battlemap;
-import dotz;
 import enemies;
 import soldiers;
 import vlk;
-import voo;
-import vapp;
 
 static int g_sel = -1;
 
@@ -34,23 +30,15 @@ static auto picks(vlk::pickable * i) {
   return i;
 }
 
-struct init : vapp {
-  void run() override {
-    main_loop("yorg", [&](auto & dq) {
-      auto vlk = vlk::bits::create(&dq);
-      vlk->map_atlas(atlas);
-      vlk->map_instances(instances);
-      vlk->map_picks(picks);
-
-      extent_loop([&] {
-        vlk->present();
-
-        auto s = vlk->current_pick();
-        if (s != g_sel) {
-          g_sel = s;
-          vlk->map_instances(instances);
-        }
-      });
-    });
+static auto & i = vlk::on_init = [](auto * vlk) {
+  vlk->map_atlas(atlas);
+  vlk->map_instances(instances);
+  vlk->map_picks(picks);
+};
+static auto & p = vlk::after_present = [](auto * vlk) {
+  auto s = vlk->current_pick();
+  if (s != g_sel) {
+    g_sel = s;
+    vlk->map_instances(instances);
   }
-} i;
+};
