@@ -30,23 +30,29 @@ static auto instances(vlk::inst * i) {
   }
   return i;
 }
-static auto picks(vlk::pickable * i) {
+static auto pick_battle(vlk::pickable * i) {
   state::battlemap::foreach([&](unsigned x, unsigned y, char c) {
     if (c != '.') return;
     *i++ = { .pos { x, y }, .id = y * 16 + x + 1 };
   });
   return i;
 }
+static auto pick_soldier(vlk::pickable * i) {
+  state::soldiers::foreach([&](unsigned x, unsigned y) {
+    *i++ = { .pos { x, y }, .id = y * 16 + x + 1 };
+  });
+  return i;
+}
 
-static auto & i = vlk::on_init = [](auto * vlk) {
-  vlk->map_atlas(atlas);
-  vlk->map_instances(instances);
-  vlk->map_picks(picks);
+static auto & i = vlk::on_init = [] {
+  vlk::map_atlas(atlas);
+  vlk::map_instances(instances);
+  vlk::map_picks(pick_soldier);
 };
-static auto & p = vlk::after_present = [](auto * vlk) {
-  auto s = vlk->current_pick() - 1;
+static auto & p = vlk::after_present = [] {
+  auto s = vlk::current_pick() - 1;
   if (s != g_sel) {
     g_sel = s;
-    vlk->map_instances(instances);
+    vlk::map_instances(instances);
   }
 };

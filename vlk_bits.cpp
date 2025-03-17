@@ -7,7 +7,7 @@ import :spr;
 import vapp;
 
 namespace vlk::impl {
-  class bits : public vlk::bits {
+  class bits {
     voo::single_cb m_cb { dq->queue_family() };
     voo::frame_sync_stuff m_sync {};
 
@@ -21,9 +21,9 @@ namespace vlk::impl {
   public:
     ~bits() { dq->queue()->device_wait_idle(); }
 
-    void map_atlas(hai::fn<void, unsigned *> f) override { m_spr.map_atlas(f); }
-    void map_instances(hai::fn<inst *, inst *> f) override { m_spr.map_instances(f); }
-    void map_picks(hai::fn<pickable *, pickable *> f) override { m_pck.map(f); }
+    void map_atlas(hai::fn<void, unsigned *> f) { m_spr.map_atlas(f); }
+    void map_instances(hai::fn<inst *, inst *> f) { m_spr.map_instances(f); }
+    void map_picks(hai::fn<pickable *, pickable *> f) { m_pck.map(f); }
     void present() {
       voo::present_guard pg { dq->queue(), sw, &m_sync };
       {
@@ -37,8 +37,16 @@ namespace vlk::impl {
       }
       m_sync.queue_submit(dq->queue(), m_cb.cb());
     }
-    unsigned current_pick() override { return m_pck.current(); } 
+    unsigned current_pick() { return m_pck.current(); } 
   };
+
+  static bits * b;
+}
+namespace vlk {
+  void map_atlas(hai::fn<void, unsigned *> f) { impl::b->map_atlas(f); }
+  void map_instances(hai::fn<inst *, inst *> f) { impl::b->map_instances(f); }
+  void map_picks(hai::fn<pickable *, pickable *> f) { impl::b->map_picks(f); }
+  unsigned current_pick() { return impl::b->current_pick(); } 
 }
 
 struct init : vapp {
@@ -62,11 +70,12 @@ struct init : vapp {
       vlk::sw = &sw;
 
       vlk::impl::bits bits {};
-      vlk::on_init(&bits);
+      vlk::impl::b = &bits;
+      vlk::on_init();
 
       extent_loop([&] {
         bits.present();
-        vlk::after_present(&bits);
+        vlk::after_present();
       });
     });
   }
