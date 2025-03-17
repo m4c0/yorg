@@ -52,3 +52,17 @@ namespace vlk {
   }
 }
 
+static auto i = [] {
+  using namespace casein;
+
+  handle(MOUSE_ENTER, [] {
+    casein::cursor_visible = false;
+    casein::interrupt(casein::IRQ_CURSOR);
+  });
+  handle(MOUSE_LEAVE, [] {
+    casein::cursor_visible = true;
+    casein::interrupt(casein::IRQ_CURSOR);
+  });
+
+  return 0;
+}(); 
