@@ -15,7 +15,10 @@ static auto atlas(auto * ptr) {
   ptr['S'] = 0xFF000077;
 }
 static auto instances(vlk::inst * i) {
-  i = battlemap::load_sprites(i);
+  battlemap::foreach([&](int x, int y, char c) {
+    *i++ = { .pos { x, y }, .uv = vlk::id_to_uv(c) };
+  });
+
   i = enemies::load_sprites(i);
   i = soldiers::load_sprites(i);
   if (g_sel >= 0) {
@@ -26,7 +29,9 @@ static auto instances(vlk::inst * i) {
   return i;
 }
 static auto picks(vlk::pickable * i) {
-  i = battlemap::load_pickables(i);
+  battlemap::foreach([&](unsigned x, unsigned y, char c) {
+    *i++ = { .pos { x, y }, .id = y * 16 + x + 1 };
+  });
   return i;
 }
 
@@ -38,7 +43,7 @@ static auto & i = vlk::on_init = [](auto * vlk) {
 static auto & p = vlk::after_present = [](auto * vlk) {
   auto s = vlk->current_pick();
   if (s != g_sel) {
-    g_sel = s;
+    g_sel = s - 1;
     vlk->map_instances(instances);
   }
 };
