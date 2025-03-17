@@ -18,9 +18,13 @@ static auto instances(vlk::inst * i) {
   battlemap::foreach([&](int x, int y, char c) {
     *i++ = { .pos { x, y }, .uv = vlk::id_to_uv(c) };
   });
+  enemies::foreach([&](int x, int y) {
+    *i++ = { .pos { x, y }, .uv = vlk::id_to_uv('E') };
+  });
+  soldiers::foreach([&](int x, int y) {
+    *i++ = { .pos { x, y }, .uv = vlk::id_to_uv('S') };
+  });
 
-  i = enemies::load_sprites(i);
-  i = soldiers::load_sprites(i);
   if (g_sel >= 0) {
     int x = g_sel % 16;
     int y = g_sel / 16;
