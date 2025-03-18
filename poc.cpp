@@ -51,21 +51,16 @@ static auto pick_soldier(vlk::pickable * i) {
   return i;
 }
 
-static void set_soldier_pick();
-static void set_target_pick() {
+static void mouse_down() {
   if (g_sel < 0) return;
-  g_soldier_sel = g_sel;
-  vlk::map_picks(pick_battle);
-
-  casein::handle(casein::MOUSE_DOWN, set_soldier_pick);
-}
-static void set_soldier_pick() {
-  if (g_sel < 0) return;
-  g_soldier_sel = -1;
-  g_sel = -1;
-  vlk::map_picks(pick_soldier);
-
-  casein::handle(casein::MOUSE_DOWN, set_target_pick);
+  if (g_soldier_sel < 0) {
+    g_soldier_sel = g_sel;
+    vlk::map_picks(pick_battle);
+  } else {
+    g_soldier_sel = -1;
+    g_sel = -1;
+    vlk::map_picks(pick_soldier);
+  }
 }
 
 static auto & i = vlk::on_init = [] {
@@ -73,7 +68,7 @@ static auto & i = vlk::on_init = [] {
   vlk::map_instances(instances);
   vlk::map_picks(pick_soldier);
 
-  casein::handle(casein::MOUSE_DOWN, set_target_pick);
+  casein::handle(casein::MOUSE_DOWN, mouse_down);
 };
 static auto & p = vlk::after_present = [] {
   auto s = vlk::current_pick() - 1;
