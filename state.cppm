@@ -47,6 +47,13 @@ namespace state::soldiers {
     }
     throw "unreachable";
   }
+  export bool has(int x, int y) {
+    for (auto & p : all) {
+      if (p != dotz::ivec2 { x, y }) continue;
+      return true;
+    }
+    return false;
+  }
 }
 
 namespace state::enemies {
