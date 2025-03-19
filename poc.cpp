@@ -48,6 +48,13 @@ static auto pick_soldier_target(vlk::pickable * i) {
 
     *i++ = { .pos = pos, .id = y * 16 + x + 1 };
   });
+  state::enemies::foreach([&](unsigned x, unsigned y) {
+    dotz::vec2 pos { x, y };
+    dotz::vec2 sld_pos { g_soldier_sel % 16, g_soldier_sel / 16 };
+    if (dotz::length(pos - sld_pos) > 8) return;
+
+    *i++ = { .pos = pos, .id = y * 16 + x + 1 };
+  });
   return i;
 }
 static auto pick_soldier(vlk::pickable * i) {
