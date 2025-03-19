@@ -31,7 +31,7 @@ namespace state::battlemap {
 }
 
 namespace state::soldiers {
-  hai::array<dotz::vec2> all {{
+  hai::array<dotz::ivec2> all {{
     { 3, 1 },
     { 8, 12 },
     { 14, 14 },
@@ -40,11 +40,29 @@ namespace state::soldiers {
   export void foreach(auto fn) {
     for (auto [x, y] : all) fn(x, y);
   }
+  export auto & at(int x, int y) {
+    for (auto & p : all) {
+      if (p != dotz::ivec2 { x, y }) continue;
+      return p;
+    }
+    throw "unreachable";
+  }
 }
 
 namespace state::enemies {
+  hai::array<dotz::ivec2> all {{
+    { 7, 4 },
+    { 8, 5 },
+  }};
+
   export void foreach(auto fn) {
-    fn(7, 4);
-    fn(8, 5);
+    for (auto [x, y] : all) fn(x, y);
+  }
+  export bool has(int x, int y) {
+    for (auto & p : all) {
+      if (p != dotz::ivec2 { x, y }) continue;
+      return true;
+    }
+    return false;
   }
 }
