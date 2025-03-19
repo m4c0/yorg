@@ -1,6 +1,7 @@
 #pragma leco app
 
 import casein;
+import dotz;
 import state;
 import vlk;
 
@@ -37,10 +38,15 @@ static auto instances(vlk::inst * i) {
   }
   return i;
 }
-static auto pick_battle(vlk::pickable * i) {
+static auto pick_soldier_target(vlk::pickable * i) {
   state::battlemap::foreach([&](unsigned x, unsigned y, char c) {
     if (c != '.') return;
-    *i++ = { .pos { x, y }, .id = y * 16 + x + 1 };
+
+    dotz::vec2 pos { x, y };
+    dotz::vec2 sld_pos { g_soldier_sel % 16, g_soldier_sel / 16 };
+    if (dotz::length(pos - sld_pos) > 4) return;
+
+    *i++ = { .pos = pos, .id = y * 16 + x + 1 };
   });
   return i;
 }
@@ -55,7 +61,7 @@ static void mouse_down() {
   if (g_sel < 0) return;
   if (g_soldier_sel < 0) {
     g_soldier_sel = g_sel;
-    vlk::map_picks(pick_battle);
+    vlk::map_picks(pick_soldier_target);
   } else {
     g_soldier_sel = -1;
     g_sel = -1;
