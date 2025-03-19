@@ -1,4 +1,6 @@
 export module state;
+import dotz;
+import hai;
 import jute;
 
 namespace state::battlemap {
@@ -29,10 +31,14 @@ namespace state::battlemap {
 }
 
 namespace state::soldiers {
+  hai::array<dotz::vec2> all {{
+    { 3, 1 },
+    { 8, 12 },
+    { 14, 14 },
+  }};
+
   export void foreach(auto fn) {
-    fn(3, 1);
-    fn(8, 12);
-    fn(14, 14);
+    for (auto [x, y] : all) fn(x, y);
   }
 }
 
