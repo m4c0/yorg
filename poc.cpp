@@ -75,6 +75,9 @@ static void mouse_down() {
   dotz::ivec2 sld_pos { g_soldier_sel % 16, g_soldier_sel / 16 };
   dotz::ivec2 sel_pos { g_sel % 16, g_sel / 16 };
   if (state::soldiers::has(sel_pos.x, sel_pos.y)) {
+    g_soldier_sel = g_sel;
+    vlk::map_picks(pick_soldier_target);
+    return;
   } else if (state::enemies::has(sel_pos.x, sel_pos.y)) {
   } else {
     state::soldiers::at(sld_pos.x, sld_pos.y) = sel_pos;
