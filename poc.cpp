@@ -80,10 +80,11 @@ static void mouse_down() {
     return;
   }
   if (state::enemies::has(sel_pos.x, sel_pos.y)) {
-    return;
+    state::enemies::hit(sel_pos.x, sel_pos.y);
+  } else {
+    state::soldiers::at(sld_pos.x, sld_pos.y) = sel_pos;
   }
 
-  state::soldiers::at(sld_pos.x, sld_pos.y) = sel_pos;
   g_soldier_sel = -1;
   g_sel = -1;
   vlk::map_picks(pick_soldier);

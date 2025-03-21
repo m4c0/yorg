@@ -73,4 +73,12 @@ namespace state::enemies {
     }
     return false;
   }
+  export void hit(int x, int y) {
+    for (auto i = 0; i < all.size(); i++) {
+      auto & p = all[i];
+      if (p != dotz::ivec2 { x, y }) continue;
+      p = all.pop_back();
+      return;
+    }
+  }
 }
