@@ -91,6 +91,8 @@ static void mouse_down() {
 }
 
 static auto & i = vlk::on_init = [] {
+  state::enemies::init();
+
   vlk::map_atlas(atlas);
   vlk::map_instances(instances);
   vlk::map_picks(pick_soldier);

@@ -57,11 +57,12 @@ namespace state::soldiers {
 }
 
 namespace state::enemies {
-  hai::array<dotz::ivec2> all {{
-    { 7, 4 },
-    { 8, 5 },
-  }};
+  hai::varray<dotz::ivec2> all { 32 };
 
+  export void init() {
+    all.push_back(dotz::ivec2 { 7, 4 });
+    all.push_back(dotz::ivec2 { 8, 5 });
+  }
   export void foreach(auto fn) {
     for (auto [x, y] : all) fn(x, y);
   }
