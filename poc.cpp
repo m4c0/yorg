@@ -24,10 +24,10 @@ static auto instances(vlk::inst * i) {
   state::battlemap::foreach([&](int x, int y, char c) {
     *i++ = { .pos { x, y }, .uv = vlk::id_to_uv(c) };
   });
-  for (auto pos: state::enemies::list()) {
+  for (auto pos: state::enemies::all) {
     *i++ = { .pos = pos, .uv = vlk::id_to_uv('E') };
   }
-  for (auto pos: state::soldiers::list()) {
+  for (auto pos: state::soldiers::all) {
     *i++ = { .pos = pos, .uv = vlk::id_to_uv('S') };
   }
 
@@ -53,7 +53,7 @@ static auto pick_soldier_target(vlk::pickable * i) {
 
     *i++ = { .pos = pos, .id = y * 16 + x + 1 };
   });
-  for (auto pos : state::enemies::list()) {
+  for (auto pos : state::enemies::all) {
     dotz::vec2 sld_pos { g_soldier_sel % 16, g_soldier_sel / 16 };
     if (dotz::length(pos - sld_pos) > max_move) continue;
 
@@ -63,7 +63,7 @@ static auto pick_soldier_target(vlk::pickable * i) {
   return i;
 }
 static auto pick_soldier(vlk::pickable * i) {
-  for (auto pos: state::soldiers::list()) {
+  for (auto pos: state::soldiers::all) {
     unsigned id = pos.y * 16 + pos.x + 1;
     *i++ = { .pos = pos, .id = id };
   }
@@ -99,12 +99,12 @@ static void mouse_down() {
 }
 
 static void enemy_turn() {
-  const auto & l = state::enemies::list();
+  auto & l = state::enemies::all;
   if (l.size() == 0) return;
 
   auto & e = l[rng::rand(l.size())];
   dotz::ivec2 s { 10000 };
-  for (auto & pos : state::soldiers::list()) {
+  for (auto & pos : state::soldiers::all) {
     auto dist = dotz::length(e - pos);
     if (dist > max_move) continue;
     if (dist > dotz::length(s - e)) continue;

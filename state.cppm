@@ -31,14 +31,13 @@ namespace state::battlemap {
 }
 
 namespace state::soldiers {
-  hai::varray<dotz::ivec2> all { 32 };
+  export hai::varray<dotz::ivec2> all { 32 };
 
   export void init() {
     all.push_back(dotz::ivec2 { 3, 1 });
     all.push_back(dotz::ivec2 { 8, 12 });
     all.push_back(dotz::ivec2 { 14, 14 });
   }
-  export const auto & list() { return all; }
   export auto & at(int x, int y) {
     for (auto & p : all) {
       if (p != dotz::ivec2 { x, y }) continue;
@@ -64,13 +63,12 @@ namespace state::soldiers {
 }
 
 namespace state::enemies {
-  hai::varray<dotz::ivec2> all { 32 };
+  export hai::varray<dotz::ivec2> all { 32 };
 
   export void init() {
     all.push_back(dotz::ivec2 { 7, 4 });
     all.push_back(dotz::ivec2 { 8, 5 });
   }
-  export const auto & list() { return all; }
   export bool has(int x, int y) {
     for (auto & p : all) {
       if (p != dotz::ivec2 { x, y }) continue;
