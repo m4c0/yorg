@@ -2,6 +2,7 @@
 
 import casein;
 import dotz;
+import rng;
 import state;
 import vlk;
 
@@ -95,6 +96,11 @@ static void mouse_down() {
 }
 
 static void enemy_turn() {
+  const auto & l = state::enemies::list();
+  if (l.size() == 0) return;
+
+  auto & e = l[rng::rand(l.size())];
+
   vlk::map_picks(pick_soldier);
   vlk::map_instances(instances);
 }
