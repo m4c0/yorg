@@ -8,6 +8,8 @@ import vlk;
 static int g_sel = -1;
 static int g_soldier_sel = -1;
 
+static void enemy_turn();
+
 static auto atlas(auto * ptr) {
   ptr['#'] = 0x77999999;
   ptr['.'] = 0xFF003300;
@@ -88,6 +90,12 @@ static void mouse_down() {
   g_soldier_sel = -1;
   g_sel = -1;
   vlk::map_picks([](auto i) { return i; });
+  vlk::map_instances(instances);
+  enemy_turn();
+}
+
+static void enemy_turn() {
+  vlk::map_picks(pick_soldier);
   vlk::map_instances(instances);
 }
 
