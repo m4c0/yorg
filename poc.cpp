@@ -22,12 +22,12 @@ static auto instances(vlk::inst * i) {
   state::battlemap::foreach([&](int x, int y, char c) {
     *i++ = { .pos { x, y }, .uv = vlk::id_to_uv(c) };
   });
-  for (auto [x, y]: state::enemies::list()) {
-    *i++ = { .pos { x, y }, .uv = vlk::id_to_uv('E') };
+  for (auto pos: state::enemies::list()) {
+    *i++ = { .pos = pos, .uv = vlk::id_to_uv('E') };
   }
-  state::soldiers::foreach([&](int x, int y) {
-    *i++ = { .pos { x, y }, .uv = vlk::id_to_uv('S') };
-  });
+  for (auto pos: state::soldiers::list()) {
+    *i++ = { .pos = pos, .uv = vlk::id_to_uv('S') };
+  }
 
   if (g_sel >= 0) {
     int x = g_sel % 16;
@@ -61,9 +61,10 @@ static auto pick_soldier_target(vlk::pickable * i) {
   return i;
 }
 static auto pick_soldier(vlk::pickable * i) {
-  state::soldiers::foreach([&](unsigned x, unsigned y) {
-    *i++ = { .pos { x, y }, .id = y * 16 + x + 1 };
-  });
+  for (auto pos: state::soldiers::list()) {
+    unsigned id = pos.y * 16 + pos.x + 1;
+    *i++ = { .pos = pos, .id = id };
+  }
   return i;
 }
 

@@ -37,9 +37,7 @@ namespace state::soldiers {
     { 14, 14 },
   }};
 
-  export void foreach(auto fn) {
-    for (auto [x, y] : all) fn(x, y);
-  }
+  export const auto & list() { return all; }
   export auto & at(int x, int y) {
     for (auto & p : all) {
       if (p != dotz::ivec2 { x, y }) continue;
