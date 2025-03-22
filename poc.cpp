@@ -79,15 +79,15 @@ static void mouse_down() {
     vlk::map_picks(pick_soldier_target);
     return;
   }
+
   if (state::enemies::has(sel_pos.x, sel_pos.y)) {
     state::enemies::hit(sel_pos.x, sel_pos.y);
   } else {
     state::soldiers::at(sld_pos.x, sld_pos.y) = sel_pos;
   }
-
   g_soldier_sel = -1;
   g_sel = -1;
-  vlk::map_picks(pick_soldier);
+  vlk::map_picks([](auto i) { return i; });
   vlk::map_instances(instances);
 }
 
