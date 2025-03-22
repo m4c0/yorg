@@ -6,6 +6,8 @@ import rng;
 import state;
 import vlk;
 
+static constexpr const auto max_move = 4;
+
 static int g_sel = -1;
 static int g_soldier_sel = -1;
 
@@ -47,13 +49,13 @@ static auto pick_soldier_target(vlk::pickable * i) {
 
     dotz::vec2 pos { x, y };
     dotz::vec2 sld_pos { g_soldier_sel % 16, g_soldier_sel / 16 };
-    if (dotz::length(pos - sld_pos) > 4) return;
+    if (dotz::length(pos - sld_pos) > max_move) return;
 
     *i++ = { .pos = pos, .id = y * 16 + x + 1 };
   });
   for (auto pos : state::enemies::list()) {
     dotz::vec2 sld_pos { g_soldier_sel % 16, g_soldier_sel / 16 };
-    if (dotz::length(pos - sld_pos) > 8) continue;
+    if (dotz::length(pos - sld_pos) > max_move) continue;
 
     unsigned id = pos.y * 16 + pos.x + 1;
     *i++ = { .pos = pos, .id = id };
@@ -101,6 +103,16 @@ static void enemy_turn() {
   if (l.size() == 0) return;
 
   auto & e = l[rng::rand(l.size())];
+  dotz::ivec2 s { 10000 };
+  for (auto & pos : state::soldiers::list()) {
+    auto dist = dotz::length(e - pos);
+    if (dist > max_move) continue;
+    if (dist > dotz::length(s - e)) continue;
+    s = pos;
+  }
+  if (state::soldiers::has(s.x, s.y)) {
+  } else {
+  }
 
   vlk::map_picks(pick_soldier);
   vlk::map_instances(instances);
