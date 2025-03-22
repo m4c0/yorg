@@ -63,9 +63,7 @@ namespace state::enemies {
     all.push_back(dotz::ivec2 { 7, 4 });
     all.push_back(dotz::ivec2 { 8, 5 });
   }
-  export void foreach(auto fn) {
-    for (auto [x, y] : all) fn(x, y);
-  }
+  export const auto & list() { return all; }
   export bool has(int x, int y) {
     for (auto & p : all) {
       if (p != dotz::ivec2 { x, y }) continue;
