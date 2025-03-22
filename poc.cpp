@@ -110,8 +110,11 @@ static void enemy_turn() {
     if (dist > dotz::length(s - e)) continue;
     s = pos;
   }
-  if (state::soldiers::has(s.x, s.y)) {
+  if (dotz::length(e - s) <= max_move) {
+    state::soldiers::hit(s.x, s.y);
   } else {
+    auto [x, y] = e + dotz::normalise(e - s) * 4;
+    e = dotz::ivec2 { static_cast<unsigned>(x), static_cast<unsigned>(y) };
   }
 
   vlk::map_picks(pick_soldier);
