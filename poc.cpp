@@ -120,6 +120,7 @@ static void enemy_turn() {
 
 static auto & i = vlk::on_init = [] {
   state::enemies::init();
+  state::soldiers::init();
 
   vlk::map_atlas(atlas);
   vlk::map_instances(instances);
